@@ -2,21 +2,17 @@
 // import { initializeApp } from 'firebase/app'
 // import * as firebaseAuth from '@firebase/auth'
 // import { getAuth } from 'firebase/auth'
+import { Provider as ReduxProvider } from 'react-redux'
+import { FatalErrorBoundary, RedwoodProvider } from '@redwoodjs/web'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { SnackbarProvider } from 'notistack'
-import { Provider as ReduxProvider } from 'react-redux'
-
-import { FatalErrorBoundary, RedwoodProvider } from '@redwoodjs/web'
 
 // import { RedwoodApolloProvider } from '@redwoodjs/web/apollo'
 import AuthProvider from 'src/context/firebase-auth-context'
 import FatalErrorPage from 'src/pages/FatalErrorPage'
 import Routes from 'src/Routes'
 import store from 'src/state/store'
-
-import SkeletonLoader from './components/skeletonLoader'
-
+import { SnackbarProvider } from 'notistack'
 import './index.css'
 
 // const firebaseConfig = {
@@ -52,7 +48,6 @@ import './index.css'
 //   auth,
 //   app, // optional
 // }
-
 const App = () => (
   <FatalErrorBoundary page={FatalErrorPage}>
     <RedwoodProvider titleTemplate="%PageTitle | %AppTitle">
