@@ -1,16 +1,29 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
 import * as React from 'react'
+
 import '../../styles/myStyles.css'
-import PropTypes from 'prop-types'
-import { useAuth } from 'src/context/firebase-auth-context'
-import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
-import { setHours, setMinutes } from 'date-fns'
-import { alpha } from '@mui/material/styles'
 import Section from '@mui/material/Box'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import IconButton from '@mui/material/IconButton'
+import Paper from '@mui/material/Paper'
+import { alpha } from '@mui/material/styles'
+import Switch from '@mui/material/Switch'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
+import PropTypes from 'prop-types'
+import DatePicker from 'react-datepicker'
+
+import { useAuth } from 'src/context/firebase-auth-context'
+import {
+  getDifferenceInDays,
+  getDifferenceInHours,
+  getDifferenceInMinutes,
+} from 'src/util/dateConverter'
+
+import 'react-datepicker/dist/react-datepicker.css'
+import { setHours, setMinutes } from 'date-fns'
 import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
@@ -19,24 +32,20 @@ import TableRow from '@mui/material/TableRow'
 import TableSortLabel from '@mui/material/TableSortLabel'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import Paper from '@mui/material/Paper'
-import Checkbox from '@mui/material/Checkbox'
-import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Switch from '@mui/material/Switch'
 import DeleteIcon from '@mui/icons-material/Delete'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'
 import { visuallyHidden } from '@mui/utils'
 import Highlighter from 'react-highlight-words'
+
 import CSVDownloader from '../../util/csvDownload'
 import { timeConv, prettyDate } from '../../util/dateConverter'
 import DropCompUnitStatus from '../dropDownUnitStatus'
 
 import CalendarMonthTwoToneIcon from '@mui/icons-material/CalendarMonthTwoTone'
-
 import EventNoteTwoToneIcon from '@mui/icons-material/EventNoteTwoTone'
 import { ConnectingAirportsOutlined } from '@mui/icons-material'
+
 import LogSkelton from '../shimmerLoaders/logSkelton'
 
 // function createData(
@@ -62,11 +71,11 @@ import LogSkelton from '../shimmerLoaders/logSkelton'
 // }
 
 function descendingComparator(a, b, orderBy) {
-  console.log('what is the order 1 ', b[orderBy])
-  if (b[orderBy] < a[orderBy]) {
+  console.log('what is the order 1 ', b,  b[orderBy])
+  if (b[orderBy] || b['Date'] < a[orderBy] || b['Date']) {
     return -1
   }
-  if (b[orderBy] > a[orderBy]) {
+  if (b[orderBy] || b['Date'] > a[orderBy] || b['Date']) {
     return 1
   }
   return 0
@@ -103,7 +112,13 @@ const headCells = [
     id: 'Date',
     numeric: false,
     disablePadding: true,
-    label: 'Date',
+    label: 'Created Date',
+  },
+  {
+    id: 'stsUpT',
+    numeric: false,
+    disablePadding: true,
+    label: 'Updated',
   },
   {
     id: 'Clientdetails',
@@ -512,6 +527,7 @@ export default function LLeadsTableBody({
   selStatus,
   rowsParent,
   selUserProfileF,
+  newArray
 }) {
   const { user } = useAuth()
   const [order, setOrder] = React.useState('desc')
@@ -555,30 +571,11 @@ export default function LLeadsTableBody({
   }, [searchKey])
 
   const filterStuff = async (parent) => {
-    let x =
-      selStatus === 'all'
-        ? parent.filter((item) =>
-            [
-              'new',
-              'followup',
-              'visitfixed',
-              'visitdone',
-              'visitcancel',
-              'negotiation',
-            ].includes(item.Status.toLowerCase())
-          )
-        : selStatus === 'archieve_all'
-        ? parent.filter((item) =>
-            ['notinterested', 'blocked', 'junk', 'dead'].includes(
-              item.Status.toLowerCase()
-            )
-          )
-        : await parent.filter(
-            (item) => item.Status.toLowerCase() === selStatus.toLowerCase()
-          )
+console.log('filter value stuff' , parent)
+    let x =  selStatus === 'all'
+    ? parent['all'] :  selStatus === 'archieve_all' ? parent['archieve_all'] : parent[selStatus]
 
-    await setRows(x)
-    await console.log('xo', x, parent, selStatus)
+    await setRows(newArray)
   }
   const filterByDate = () => {
     rows.filter((item) => {
@@ -644,6 +641,7 @@ export default function LLeadsTableBody({
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc'
     setOrder(isAsc ? 'desc' : 'asc')
+    console.log('property is', property)
     setOrderBy(property)
   }
 
@@ -700,6 +698,9 @@ export default function LLeadsTableBody({
       }
     }
   }, [user])
+
+
+
   const pickCustomViewer = (item) => {
     const newViewer = viewUnitStatusA
     if (viewUnitStatusA.includes(item)) {
@@ -769,11 +770,14 @@ id: "1" */}
               {/* item.Assignedto.toLowerCase().includes(
                     searchKey.toLowerCase()
                   ) || */}
-              {rows
+              {
+
+                rows
                 .filter((item) => {
                   if (searchKey == '' || !searchKey) {
                     return item
-                  } else if (
+                  }
+                   else if (
                     item.Email.toLowerCase().includes(
                       searchKey.toLowerCase()
                     ) ||
@@ -781,19 +785,13 @@ id: "1" */}
                       searchKey.toLowerCase()
                     ) ||
                     item.Name.toLowerCase().includes(searchKey.toLowerCase()) ||
-                    item.Project.toLowerCase().includes(
-                      searchKey.toLowerCase()
-                    ) ||
                     item.Source.toLowerCase().includes(
                       searchKey.toLowerCase()
-                    ) ||
-                    item.Status.toLowerCase().includes(searchKey.toLowerCase())
+                    )
                   ) {
                     return item
                   }
                 })
-
-                // .slice()
                 .sort(getComparator(order, orderBy))
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.Name)
@@ -818,6 +816,7 @@ id: "1" */}
                       >
                         {index + 1}
                       </TableCell>
+
                       <TableCell
                         component="th"
                         id={labelId}
@@ -827,6 +826,50 @@ id: "1" */}
                         <span className="font-bodyLato">
                           {prettyDate(row.Date).toLocaleString()}
                         </span>
+                      </TableCell>
+                      <TableCell
+                        component="th"
+                        id={labelId}
+                        scope="row"
+                        padding="none"
+                      >
+                      <>
+                        {/* <span className="font-bodyLato">
+                          {prettyDate(row?.stsUpT || row.Date).toLocaleString()}
+                        </span> */}
+                        <span className="px- py-[1px]  min-w-[100px] inline-flex text-xs leading-5 tracking-wide  rounded-full  text-green-800">
+                                                {Math.abs(
+                                                  getDifferenceInMinutes(
+                                                    (row?.stsUpT || row.Date),
+                                                    ''
+                                                  )
+                                                ) > 60
+                                                  ? Math.abs(
+                                                      getDifferenceInMinutes(
+                                                        (row?.stsUpT || row.Date),
+                                                        ''
+                                                      )
+                                                    ) > 1440
+                                                    ? `${Math.abs(getDifferenceInDays(
+                                                      (row?.stsUpT || row.Date),
+                                                        ''
+                                                      ))} Days `
+                                                    : `${Math.abs(getDifferenceInHours(
+                                                      (row?.stsUpT || row.Date),
+                                                        ''
+                                                      ))} Hours `
+                                                  : `${Math.abs(getDifferenceInMinutes(
+                                                    (row?.stsUpT || row.Date),
+                                                      ''
+                                                    ))} Min`}{' '}
+                                                {getDifferenceInMinutes(
+                                                  (row?.stsUpT || row.Date),
+                                                  ''
+                                                ) < 0
+                                                  ? 'ago'
+                                                  : 'Left'}
+                                              </span>
+                        </>
                       </TableCell>
 
                       <TableCell align="left">
@@ -839,7 +882,7 @@ id: "1" */}
                               <div
                                 className="absolute bottom-0 flex-col items-center hidden mb-6 group-hover:flex"
                                 // style={{  width: '300px' }}
-                                style={{ 'z-index': '9' }}
+                                style={{ 'zIndex': '9' }}
                               >
                                 <span
                                   className="rounded italian relative mr-2 z-100000 p-2 text-xs leading-none text-white whitespace-no-wrap bg-black shadow-lg"

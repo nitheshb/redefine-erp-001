@@ -68,7 +68,7 @@ const ProjectStatsCard = ({
                 style={{ alignItems: 'end' }}
               >
                 <div
-                  className="absolute bottom-0 flex flex-col items-center hidden mb-6 group-hover:flex"
+                  className="absolute bottom-0 flex-col items-center hidden mb-6 group-hover:flex"
                   style={{ alignItems: 'end', width: '300px' }}
                 >
                   <span

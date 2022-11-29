@@ -59,7 +59,7 @@ export default function EditLeadTask({
                 <DatePicker
                   className=" mt-[2px] pl- px-   min-w-[151px] inline text-xs text-[#0091ae] bg-[#F5F8FA]"
                   selected={startDate}
-                  onChange={(date) => setStartDate(date)}
+                  onChange={(date) => setStartDate(date.getTime())}
                   showTimeSelect
                   timeFormat="HH:mm"
                   injectTimes={[

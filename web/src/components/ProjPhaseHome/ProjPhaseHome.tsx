@@ -1,30 +1,36 @@
 import { useState, useEffect } from 'react'
-import { useParams } from '@redwoodjs/router'
+
 import {
   PencilIcon,
   EyeIcon,
   EyeOffIcon,
   PlusIcon,
 } from '@heroicons/react/outline'
+
+import { useParams } from '@redwoodjs/router'
+
+import Blockdetails from 'src/components/Blockdetails/Blockdetails'
+import DummyBodyLayout from 'src/components/DummyBodyLayout/DummyBodyLayout'
+import SiderForm from 'src/components/SiderForm/SiderForm'
 import {
   getPhasesByProject,
   getBlocksByPhase,
 } from 'src/context/dbQueryFirebase'
-import SiderForm from 'src/components/SiderForm/SiderForm'
-import Blockdetails from 'src/components/Blockdetails/Blockdetails'
-import DummyBodyLayout from 'src/components/DummyBodyLayout/DummyBodyLayout'
+import { useAuth } from 'src/context/firebase-auth-context'
+
 import AdditionalChargesForm from '../AdditionalChargesForm/AdditionalChargesForm'
+import AssigedToDropComp from '../assignedToDropComp'
+import BlockingUnitForm from '../BlockingUnitForm'
+import AddBookingForm from '../bookingForm'
+import CostBreakUpSheet from '../costBreakUpSheet'
+import CostSheetSetup from '../costSheetSetup'
+import DropCompUnitStatus from '../dropDownUnitStatus'
+import Floordetails from '../Floordetails/Floordetails'
 import MoreDetailsPhaseForm from '../MoreDetailsPhaseForm/MoreDetailsPhaseForm'
 import PaymentScheduleForm from '../PaymentScheduleForm/PaymentScheduleForm'
-import PlanDiagramView from '../planDiagramView'
-import AddBookingForm from '../bookingForm'
-import BlockingUnitForm from '../BlockingUnitForm'
-import CostBreakUpSheet from '../costBreakUpSheet'
-import DropCompUnitStatus from '../dropDownUnitStatus'
-import AssigedToDropComp from '../assignedToDropComp'
 import PaymentLeadAccess from '../PaymentScheduleForm/ProjectLeadAccess'
-import Floordetails from '../Floordetails/Floordetails'
-import { useAuth } from 'src/context/firebase-auth-context'
+import PaymentScheduleSetup from '../paymentScheduleSetup'
+import PlanDiagramView from '../planDiagramView'
 
 const ProjPhaseHome = ({
   projectDetails,
@@ -400,9 +406,10 @@ const ProjPhaseHome = ({
                             { lab: 'Report', val: 'Report' },
                             { lab: 'Blocks', val: 'Blocks' },
                             {
-                              lab: 'Additional Charges',
-                              val: 'Additional Charges',
+                              lab: 'Cost Sheet',
+                              val: 'Cost Sheet',
                             },
+
                             {
                               lab: 'Payment Schedule',
                               val: 'Payment Schedule',
@@ -472,6 +479,12 @@ const ProjPhaseHome = ({
                             })}
                           </div>
                         </>
+                      )}
+                      {phaseViewFeature === 'Cost Sheet' && (
+                        <CostSheetSetup phase={phase} source={source} />
+                      )}
+                      {phaseViewFeature === 'Payment Schedule' && (
+                        <PaymentScheduleSetup phase={phase} source={source} />
                       )}
                       {phaseViewFeature === 'Blocks' &&
                         (selPhaseObj?.projectType?.name == 'Plots' ? (
@@ -555,20 +568,8 @@ const ProjPhaseHome = ({
                           </div>
                         ))}
 
-                      {phaseViewFeature === 'Additional Charges' && (
-                        <AdditionalChargesForm
-                          title={'Additional Charges'}
-                          data={{ phase: phase }}
-                          source={source}
-                        />
-                      )}
-                      {phaseViewFeature === 'Payment Schedule' && (
-                        <PaymentScheduleForm
-                          title={'Payment Schedule'}
-                          data={{ phase: phase }}
-                          source={source}
-                        />
-                      )}
+
+
                       {phaseViewFeature === 'Plan Diagram' && (
                         <PlanDiagramView
                           title={'Plan Diagram'}

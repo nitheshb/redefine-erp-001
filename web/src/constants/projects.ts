@@ -182,6 +182,7 @@ export const sourceListItems = [
     value: 'googleadwords',
     rep: ['googleadwords', 'Google-Ads', 'google adwords'],
   },
+  { label: 'Hoardings', value: 'hoardings', rep: ['hoardings', 'Hoardings'] },
   { label: 'Housing.com', value: 'housingcom', rep: ['housingcom', 'housing'] },
   {
     label: 'Instagram Ad',
@@ -195,7 +196,13 @@ export const sourceListItems = [
     rep: ['magicbricks', 'magic bricks', 'magic bricks'],
   },
   { label: 'MCube', value: 'mcube', rep: ['mcube', 'Mcube'] },
+  {
+    label: 'News Paper',
+    value: 'newspaper',
+    rep: ['NewsPaper', 'newspaper', 'News Paper', 'news paper'],
+  },
   { label: 'REPP', value: 'repp', rep: ['REPP', 'repp'] },
+  { label: 'SMS', value: 'sms', rep: ['sms', 'Sms', 'SMS'] },
   { label: 'Website', value: 'website', rep: ['website'] },
   { label: '99acres', value: '99acres', rep: ['99acres'] },
   { label: 'others', value: 'others', rep: [] },
@@ -295,9 +302,19 @@ export const costSheetAdditionalChargesA = [
     label: 'Car Parking',
   },
   {
+    value: 'clubhouse_membership',
+    label: 'Club House Membership',
+  },
+  {
     value: 'electricity_watersewage',
     label: 'Electricity/Water Sewage',
   },
+
+  {
+    value: 'frankingcharges',
+    label: 'Franking Charges',
+  },
+
   {
     value: 'maintenancecharges',
     label: 'Maintenance Charges',
@@ -307,18 +324,75 @@ export const costSheetAdditionalChargesA = [
     label: 'Power Back-up Charges',
   },
   {
-    value: 'clubhouse_membership',
-    label: 'Club House Membership',
+    value: 'plc',
+    label: 'PLC',
   },
+
   {
     value: 'premium',
     label: 'Premium',
   },
+  {
+    value: 'legalCharges_onsale',
+    label: 'Legal Charges on sale Deed',
+  },
+]
+export const csConstruAdditionalChargesA = [
+  {
+    value: 'corpusfund',
+    label: 'Corpus Fund',
+  },
+  {
+    value: 'maintenance_2',
+    label: 'Maintenance 2 years',
+  },
+]
+export const paymetScheduleConstruct = [
+  {
+    value: 'advance_construct',
+    label: 'Advance',
+  },
+  {
+    value: 'On_Completion_of_Plinth_Beam',
+    label: 'On Completion of Plinth Beam',
+  },
+  {
+    value: 'On_Completion_of_First_FLoor_Slab',
+    label: 'On Completion of First FLoor Slab',
+  },
+  {
+    value: 'On Completion of Second Floor Slab',
+    label: 'On Completion of Second Floor Slab',
+  },
+  {
+    value: 'On_Completion_of_Brick_work',
+    label: 'On Completion of Brick work',
+  },
+  {
+    value: 'On_Completion_of_Plastering_Flooring ',
+    label: 'On Completion of Plastering & Flooring ',
+  },
+  {
+    value: 'On_Possession_Balance_Construction_Cost',
+    label: 'On On Possession - Balance Construction Cost',
+  },
+  {
+    value: 'Total_Other_Charges_Amenities:	',
+    label: 'Total Other Charges (Amenities):	',
+  },
 ]
 export const paymentScheduleA = [
   {
-    value: 'Booking',
-    label: 'Booking Amount',
+    value: 'on_booking',
+    label: 'On Booking',
+  },
+  {
+    value: 'on_execution_agree',
+    label: 'On Execution of Agreement to sell',
+  },
+  {
+    value: 'on_registration',
+    label: 'On Execution of Sale Deed for registration',
   },
   {
     value: 'executionofats_atb',

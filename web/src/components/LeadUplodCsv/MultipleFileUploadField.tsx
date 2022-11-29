@@ -1,20 +1,19 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable no-unused-expressions */
-import { Grid, makeStyles } from '@material-ui/core'
-import { useField } from 'formik'
 import React, { useCallback, useEffect, useState, useMemo } from 'react'
-import { Form, Formik } from 'formik'
+
+import { Timestamp } from '@firebase/firestore'
 import { DownloadIcon } from '@heroicons/react/solid'
+import { Grid, makeStyles } from '@material-ui/core'
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
+import { useField } from 'formik'
+import { Form, Formik } from 'formik'
 import { parse } from 'papaparse'
 import { FileError, FileRejection, useDropzone } from 'react-dropzone'
-import { SingleFileUploadWithProgress } from './SingleFileUploadWithProgress'
-import { UploadError } from './UploadError'
-import { LAddLeadTable } from '../LAddLeadTable'
-import LfileUploadTableHome from '../LfileUploadTableHome'
 import { v4 as uuidv4 } from 'uuid'
 import * as Yup from 'yup'
-import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
+
 import {
   checkIfLeadAlreadyExists,
   checkIfUnitAlreadyExists,
@@ -22,12 +21,17 @@ import {
   getAllProjects,
   steamUsersListByRole,
 } from 'src/context/dbQueryFirebase'
-import { TextField } from 'src/util/formFields/TextField'
-import Loader from '../Loader/Loader'
-import { storage } from 'src/context/firebaseConfig'
 import { useAuth } from 'src/context/firebase-auth-context'
-import { Timestamp } from '@firebase/firestore'
+import { storage } from 'src/context/firebaseConfig'
 import { prettyDate } from 'src/util/dateConverter'
+import { TextField } from 'src/util/formFields/TextField'
+
+import { LAddLeadTable } from '../LAddLeadTable'
+import LfileUploadTableHome from '../LfileUploadTableHome'
+import Loader from '../Loader/Loader'
+
+import { SingleFileUploadWithProgress } from './SingleFileUploadWithProgress'
+import { UploadError } from './UploadError'
 
 let currentId = 0
 
@@ -422,8 +426,23 @@ export function MultipleFileUploadField({
                 href="/leadTemplate.csv"
               >
                 <span className="text-xs text-blue-500">
-                  <DownloadIcon className="h-3 w-3 inline-block" />
+                  <DownloadIcon className="h-3 w-3 mr-1 mb-1 inline-block" />
                   Sample Template
+                </span>
+              </a>
+            </div>
+          )}
+          {title === 'Import Project Units' && (
+            <div className="w-full flex flex-row justify-between ">
+              <span></span>
+              <a
+                download="unitTemplate.csv"
+                target="_blank"
+                href="/unitTemplate.csv"
+              >
+                <span className="text-xs text-blue-500">
+                  <DownloadIcon className="h-3 w-3 mr-1 mb-1 inline-block" />
+                  Sample Unit Template
                 </span>
               </a>
             </div>

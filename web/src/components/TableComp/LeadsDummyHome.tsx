@@ -11,8 +11,12 @@ import { MetaTags } from '@redwoodjs/web'
 
 import LLeadsTableView from 'src/components/LLeadsTableView/LLeadsTableView'
 import { USER_ROLES } from 'src/constants/userRoles'
-import { getFinanceTransactionsByStatus } from 'src/context/dbQueryFirebase'
+import {
+  getFinanceTransactionsByStatus,
+  getLeadsByAdminStatus,
+} from 'src/context/dbQueryFirebase'
 import { useAuth } from 'src/context/firebase-auth-context'
+import { prettyDate } from 'src/util/dateConverter'
 import { CustomSelect } from 'src/util/formFields/selectBoxField'
 
 import CardItem from '../leadsCard'
@@ -20,7 +24,7 @@ import SiderForm from '../SiderForm/SiderForm'
 
 import FinanceTableView from './financeTableView'
 
-const FinanceTransactionsHome = ({ leadsTyper }) => {
+const LeadsDummyHome = ({ leadsTyper }) => {
   const { user } = useAuth()
   const { orgId } = user
   const isImportLeads =
@@ -39,31 +43,91 @@ const FinanceTransactionsHome = ({ leadsTyper }) => {
 
   const [value, setValue] = useState('latest')
   const tabHeadFieldsA = [
-    { lab: 'All Transactions', val: 'all' },
-    { lab: 'Latest', val: 'latest' },
-    { lab: 'Reviewing', val: 'reviewing' },
-    { lab: 'Cleared', val: 'cleared' },
-    { lab: 'Rejected', val: 'rejected' },
+    { lab: 'In Progress', val: 'inprogress' },
+    { lab: 'New', val: 'new' },
+    { lab: 'Follow Up', val: 'followup' },
+    { lab: 'Visit Fixed', val: 'visitfixed' },
+    { lab: 'Visit Done', val: 'visitdone' },
+    { lab: 'Visit Cancel', val: 'visitcancel' },
+    { lab: 'Negotiation', val: 'negotiation' },
+    { lab: 'Unassigned', val: 'unassigned' },
   ]
+  const archieveFields = ['Dead', 'RNR', 'blocked', 'notinterested', 'junk']
   useEffect(() => {
     getLeadsDataFun()
   }, [])
 
   const rowsCounter = (parent, searchKey) => {
-    return parent.filter((item) => {
-      if (searchKey === 'all') {
-        return item
-      } else if (item.status.toLowerCase() === searchKey.toLowerCase()) {
-        console.log('All1', item)
-        return item
-      }
-    })
+    console.log('seach key is', searchKey)
+    if (searchKey === 'inprogress') {
+      return serialLeadsData
+    } else {
+      return serialLeadsData.filter((item) => {
+        return item?.status?.toLowerCase() === searchKey?.toLowerCase()
+        // if (searchKey === 'inprogress') {
+        //   return item
+        // } else if (item?.status?.toLowerCase() === searchKey?.toLowerCase()) {
+        //   console.log('All1', item)
+        //   return item
+        // }
+      })
+    }
   }
 
   const getLeadsDataFun = async () => {
     console.log('login role detials', user)
-    const { access, uid } = user
+    const { access, uid, projAccessA } = user
 
+    const unsubscribe = getLeadsByAdminStatus(
+      orgId,
+      async (querySnapshot) => {
+        const usersListA = querySnapshot.docs.map((docSnapshot) => {
+          const x = docSnapshot.data()
+          x.id = docSnapshot.id
+          return x
+        })
+
+        // setBoardData
+        await console.log(
+          'my Array data is delayer ',
+          projAccessA,
+          usersListA.length
+        )
+        await console.log('this is strange 1', serialLeadsData.length)
+        await setSerialLeadsData(usersListA)
+        await setLeadsFetchedData(usersListA)
+        await console.log('this is strange 2', serialLeadsData.length)
+
+        // await setLeadsFetchedRawData(usersListA)
+        // await serealizeData(usersListA)
+        // filter_Leads_Projects_Users_Fun()
+        // await setLeadsFetchedData(usersListA)
+      },
+      {
+        status:
+          leadsTyper === 'inProgress'
+            ? [
+                'new',
+                'followup',
+                'unassigned',
+                'visitfixed',
+                '',
+                'visitdone',
+                'visitcancel',
+                'negotiation',
+                'reassign',
+                'RNR',
+                // 'booked',
+              ]
+            : leadsTyper === 'booked'
+            ? ['booked']
+            : archieveFields,
+        projAccessA: projAccessA,
+      },
+      (error) => setLeadsFetchedData([])
+    )
+    return unsubscribe
+    return
     if (access?.includes('manage_leads')) {
       const unsubscribe = getFinanceTransactionsByStatus(
         orgId,
@@ -83,7 +147,6 @@ const FinanceTransactionsHome = ({ leadsTyper }) => {
           status: [
             'latest',
             'reviewing',
-            'review',
             'cleared',
             'rejected',
             '',
@@ -111,7 +174,6 @@ const FinanceTransactionsHome = ({ leadsTyper }) => {
           uid: uid,
           status: [
             'new',
-            'reviewing',
             'review',
             'cleared',
             'rejected',
@@ -160,7 +222,7 @@ const FinanceTransactionsHome = ({ leadsTyper }) => {
             <div className="flex items-center justify-between py-2 px-6 bg-white ">
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 leading-light py-2 ">
-                  Accounts Transactions Space
+                  Leads Management Dummy
                 </h2>
               </div>
               <div className="flex px-6">
@@ -240,6 +302,7 @@ const FinanceTransactionsHome = ({ leadsTyper }) => {
                           } font-bold`}
                         >
                           {' '}
+                          {serialLeadsData.length}
                           {rowsCounter(leadsFetchedData, fieldHead?.val).length}
                         </span>
                         <span
@@ -278,241 +341,21 @@ const FinanceTransactionsHome = ({ leadsTyper }) => {
                         </tr>
                       </thead>
                       <tbody>
-                        {leadsFetchedData.map((finData, i) => (
+                        {serialLeadsData.map((row, index) => (
                           <tr
                             className="app-border-1 border-y border-slate-200 my-2 py-2 h-[120px]"
-                            key={i}
+                            key={index}
                           >
+                            <td>{index + 1}</td>
                             <td>
-                              <div className="flex justify-center text-right items-center rounded-md w-8 h-8 app-bg-yellow-2 app-color-yellow-1 text-lg font-semibold">
-                                {i + 1}
-                              </div>
-                              <div
-                                className={`${
-                                  finData?.status === 'cleared'
-                                    ? 'bg-green-700'
-                                    : finData?.status === 'rejected'
-                                    ? 'bg-yellow-600'
-                                    : 'bg-violet-600'
-                                }   w-24 text-xs font-semibold px-3 py-0.5 rounded-br-md rounded-tl-md text-white`}
-                              >
-                                {finData?.status?.toLocaleUpperCase()}
-                              </div>
-                            </td>
-                            <td>
-                              <div className="flex flex-row py-3 ml-4">
-                                <div className="mr-2 w-[3px] rounded-2xl  bg-violet-300 "></div>
-                                <div className="flex flex-col">
-                                  <span className="font-semibold text-sm app-color-black">
-                                    {finData?.fromObj?.name || 'Vikram Bose'}
-                                  </span>
-                                  <span className="font-normal text-xs app-color-gray-1">
-                                    {'52346673647'}
-                                  </span>
-                                  <span className="font-normal text-xs app-color-gray-1">
-                                    {finData?.fromObj?.bankName}
-                                  </span>
-                                  <span className="font-normal text-xs app-color-gray-1">
-                                    {finData?.fromObj?.branch}
-                                  </span>
-                                </div>
-                              </div>
-                            </td>
-                            <td>
-                              <div className="flex flex-row ml-4 py-3">
-                                <div className="mr-2 w-[3px] rounded-2xl bg-violet-300  "></div>
-                                <div className="flex flex-col">
-                                  <span className="font-semibold text-sm app-color-black">
-                                    {finData?.toAccount?.name}
-                                  </span>
-                                  <span className="font-normal text-xs app-color-gray-1">
-                                    {finData?.toAccount?.accountNo}
-                                  </span>
-                                  <span className="font-normal text-xs app-color-gray-1">
-                                    {finData?.toAccount?.bankName}
-                                  </span>
-                                  <span className="font-normal text-xs app-color-gray-1">
-                                    {finData?.toAccount?.branch}
-                                  </span>
-                                </div>
-                              </div>
-                            </td>
-                            <td>
-                              <div className="flex flex-row py-3">
-                                {/* <div className="mr-2 w-[3px]  bg-gray-100 "></div> */}
-                                <div className="flex flex-col">
-                                  <span className="font-semibold text-sm app-color-black">
-                                    {finData?.mode}
-                                  </span>
-                                  <span className="font-normal text-xs app-color-gray-1">
-                                    {finData?.transactionNo}
-                                  </span>
-                                  <span className="font-normal text-xs app-color-gray-1">
-                                    {finData?.dated}
-                                  </span>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="text-right">
-                              <span className="text-right font-semibold text-sm app-color-gray-1 mr-10">
-                                Rs {finData?.amount}
+                              {' '}
+                              <span className="font-bodyLato">
+                                {prettyDate(row.Date).toLocaleString()}
                               </span>
-                            </td>
-
-                            <td>
-                              <span className="ml-3 font-semibold text-md app-color-gray-1">
-                                NA
-                              </span>
-                            </td>
-                            <td>
-                              <svg
-                                className="w-6 h-6 app-color-blue-3"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
-                                ></path>
-                              </svg>
                             </td>
                           </tr>
                         ))}
-                        {[
-                          {
-                            fromObj: {
-                              name: 'Vikram Bose',
-                              accountNo: '52346673647',
-                              bankName: 'Andhara Bank',
-                              branch: 'Hsr layout',
-                            },
-                            toAccount: {
-                              name: 'Vertex Apartment',
-                              accountNo: '52346673647',
-                              bankName: 'Andhara Bank',
-                              branch: 'Hsr layout',
-                            },
-                            projDetails: {
-                              projName: 'Vertex Apartments',
-                              projId: 123456,
-                              unitId: 9876,
-                            },
-                            amount: 123000,
-                            mode: 'Neft/Imps',
-                            transactionNo: 12334,
-                            demandNo: 3456,
-                            transactionDate: '12-july-2022',
-                            dated: '12-july-2022',
-                            status: 'inreveiw',
-                          },
-                        ].map((dat, i) => (
-                          <tr
-                            className="app-border-1 border-y border-slate-200 my-2 py-2 h-[120px]"
-                            key={i}
-                          >
-                            <td>
-                              <div className="flex justify-center text-right items-center rounded-md w-8 h-8 app-bg-yellow-2 app-color-yellow-1 text-lg font-semibold">
-                                {i + 1}
-                              </div>
-                              <div
-                                className={`${
-                                  dat?.status === 'cleared'
-                                    ? 'bg-green-700'
-                                    : dat?.status === 'rejected'
-                                    ? 'bg-yellow-600'
-                                    : 'bg-violet-600'
-                                }   w-24 text-xs font-semibold px-3 py-0.5 rounded-br-md rounded-tl-md text-white`}
-                              >
-                                {dat?.status?.toLocaleUpperCase()}
-                              </div>
-                            </td>
-                            <td>
-                              <div className="flex flex-row py-3 ml-4">
-                                <div className="mr-2 w-[3px] rounded-2xl  bg-violet-300 "></div>
-                                <div className="flex flex-col">
-                                  <span className="font-semibold text-sm app-color-black">
-                                    {dat?.fromObj.name || 'Vikram Bose'}
-                                  </span>
-                                  <span className="font-normal text-xs app-color-gray-1">
-                                    {'52346673647'}
-                                  </span>
-                                  <span className="font-normal text-xs app-color-gray-1">
-                                    {dat?.fromObj.bankName}
-                                  </span>
-                                  <span className="font-normal text-xs app-color-gray-1">
-                                    {dat?.fromObj.branch}
-                                  </span>
-                                </div>
-                              </div>
-                            </td>
-                            <td>
-                              <div className="flex flex-row ml-4 py-3">
-                                <div className="mr-2 w-[3px] rounded-2xl bg-violet-300  "></div>
-                                <div className="flex flex-col">
-                                  <span className="font-semibold text-sm app-color-black">
-                                    {dat?.toAccount.name}
-                                  </span>
-                                  <span className="font-normal text-xs app-color-gray-1">
-                                    {dat?.toAccount.accountNo}
-                                  </span>
-                                  <span className="font-normal text-xs app-color-gray-1">
-                                    {dat?.toAccount.bankName}
-                                  </span>
-                                  <span className="font-normal text-xs app-color-gray-1">
-                                    {dat?.toAccount.branch}
-                                  </span>
-                                </div>
-                              </div>
-                            </td>
-                            <td>
-                              <div className="flex flex-row py-3">
-                                {/* <div className="mr-2 w-[3px]  bg-gray-100 "></div> */}
-                                <div className="flex flex-col">
-                                  <span className="font-semibold text-sm app-color-black">
-                                    {dat?.mode}
-                                  </span>
-                                  <span className="font-normal text-xs app-color-gray-1">
-                                    {dat?.transactionNo}
-                                  </span>
-                                  <span className="font-normal text-xs app-color-gray-1">
-                                    {dat?.dated}
-                                  </span>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="text-right">
-                              <span className="text-right font-semibold text-sm app-color-gray-1 mr-10">
-                                Rs {dat?.amount}
-                              </span>
-                            </td>
 
-                            <td>
-                              <span className="ml-3 font-semibold text-md app-color-gray-1">
-                                NA
-                              </span>
-                            </td>
-                            <td>
-                              <svg
-                                className="w-6 h-6 app-color-blue-3"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
-                                ></path>
-                              </svg>
-                            </td>
-                          </tr>
-                        ))}
                         {leadsFetchedData.map((dat, i) => (
                           <tr
                             className="app-border-1 border-y border-slate-200 my-2 py-2 h-[120px]"
@@ -646,4 +489,4 @@ const FinanceTransactionsHome = ({ leadsTyper }) => {
   )
 }
 
-export default FinanceTransactionsHome
+export default LeadsDummyHome

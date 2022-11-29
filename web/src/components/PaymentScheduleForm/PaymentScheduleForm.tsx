@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react'
+
 import { Dialog } from '@headlessui/react'
 import { Alert, AlertTitle } from '@mui/lab'
-import DatePicker from 'react-datepicker'
 import { format, parse, isDate } from 'date-fns'
 import { useSnackbar } from 'notistack'
+import DatePicker from 'react-datepicker'
 import Select from 'react-select'
-import { useAuth } from 'src/context/firebase-auth-context'
+
 // import { Edit, DeleteOutline } from '@material-ui/icons'
 import { MaterialCRUDTable } from 'src/components/MaterialCRUDTable'
+import {
+  paymentScheduleA,
+  paymetScheduleConstruct,
+} from 'src/constants/projects'
 import {
   getPaymentSchedule,
   createPaymentSheduleComp,
@@ -16,9 +21,9 @@ import {
   addPhasePaymentScheduleCharges,
   updatePaymentScheduleCharges,
 } from 'src/context/dbQueryFirebase'
-import { paymentScheduleA } from 'src/constants/projects'
+import { useAuth } from 'src/context/firebase-auth-context'
 
-const PaymentScheduleForm = ({ title, data, source }) => {
+const PaymentScheduleForm = ({ title, data, source, blocksViewFeature }) => {
   const { user } = useAuth()
 
   const { orgId } = user
@@ -40,11 +45,15 @@ const PaymentScheduleForm = ({ title, data, source }) => {
   }, [source, data, tableData])
   useEffect(() => {
     const { phase } = data
-    const { paymentScheduleObj } = phase
+    const { paymentScheduleObj, ConstructPayScheduleObj } = phase
+    const x =
+      blocksViewFeature === 'Construction_Payment_Schedule'
+        ? ConstructPayScheduleObj
+        : paymentScheduleObj
 
-    setTableData(paymentScheduleObj)
+    setTableData(x)
     console.log('payment', paymentScheduleObj)
-  }, [data])
+  }, [data, blocksViewFeature])
 
   const defaultValue = (options, value) => {
     return (
@@ -73,8 +82,17 @@ const PaymentScheduleForm = ({ title, data, source }) => {
             onChange={(value_x) => {
               onChange(value_x)
             }}
-            options={paymentScheduleA}
-            value={defaultValue(paymentScheduleA, value)}
+            options={
+              blocksViewFeature === 'Plot_Payment_Schedule'
+                ? paymentScheduleA
+                : paymetScheduleConstruct
+            }
+            value={defaultValue(
+              blocksViewFeature === 'Plot_Payment_Schedule'
+                ? paymentScheduleA
+                : paymetScheduleConstruct,
+              value
+            )}
             className="text-md mr-2 z-50"
             styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
           />
@@ -125,28 +143,9 @@ const PaymentScheduleForm = ({ title, data, source }) => {
         />
       ),
     },
-    // {
-    //   title: 'Description*',
-    //   field: 'description',
-    //   headerStyle: {
-    //     padding: '0.25rem',
-    //   },
-    //   cellStyle: {
-    //     padding: '0.25rem',
-    //   },
-    //   editComponent: ({ value, onChange }) => (
-    //     <input
-    //       placeholder="Description"
-    //       className="w-full min-w-full flex bg-grey-lighter text-grey-darker border border-[#cccccc] rounded-md h-10 px-2"
-    //       autoComplete="off"
-    //       onChange={(e) => onChange(e.target.value)}
-    //       value={value}
-    //     />
-    //   ),
-    // },
     {
-      title: 'Due date*',
-      field: 'dueDate',
+      title: 'Description*',
+      field: 'description',
       headerStyle: {
         padding: '0.25rem',
       },
@@ -154,20 +153,39 @@ const PaymentScheduleForm = ({ title, data, source }) => {
         padding: '0.25rem',
       },
       editComponent: ({ value, onChange }) => (
-        <DatePicker
-          selected={
-            value && !isDate(value)
-              ? parse(value, 'dd/MM/yyyy', new Date())
-              : value
-          }
-          onChange={onChange}
-          autoComplete="off"
+        <input
+          placeholder="Description"
           className="w-full min-w-full flex bg-grey-lighter text-grey-darker border border-[#cccccc] rounded-md h-10 px-2"
-          dateFormat="dd/MM/yyyy"
-          placeholderText="dd/mm/yyyy"
+          autoComplete="off"
+          onChange={(e) => onChange(e.target.value)}
+          value={value}
         />
       ),
     },
+    // {
+    //   title: 'Due date*',
+    //   field: 'dueDate',
+    //   headerStyle: {
+    //     padding: '0.25rem',
+    //   },
+    //   cellStyle: {
+    //     padding: '0.25rem',
+    //   },
+    //   editComponent: ({ value, onChange }) => (
+    //     <DatePicker
+    //       selected={
+    //         value && !isDate(value)
+    //           ? parse(value, 'dd/MM/yyyy', new Date())
+    //           : value
+    //       }
+    //       onChange={onChange}
+    //       autoComplete="off"
+    //       className="w-full min-w-full flex bg-grey-lighter text-grey-darker border border-[#cccccc] rounded-md h-10 px-2"
+    //       dateFormat="dd/MM/yyyy"
+    //       placeholderText="dd/mm/yyyy"
+    //     />
+    //   ),
+    // },
   ]
 
   // const getPayments = async () => {
@@ -231,7 +249,15 @@ const PaymentScheduleForm = ({ title, data, source }) => {
         return e
       })
       console.log('check this stuff it', c)
-      await updatePaymentScheduleCharges(orgId,uid, c, enqueueSnackbar)
+      await updatePaymentScheduleCharges(
+        orgId,
+        uid,
+        c,
+        blocksViewFeature === 'Construction_Payment_Schedule'
+          ? 'ConstructPayScheduleObj'
+          : 'paymentScheduleObj',
+        enqueueSnackbar
+      )
     } else {
       setErrorMessages(errorList)
       setIserror(true)
@@ -243,7 +269,15 @@ const PaymentScheduleForm = ({ title, data, source }) => {
     const { uid } = data?.phase || {}
     const c = tableData.filter((e) => e.myId != oldData.myId)
     console.log('check this stuff', c)
-    await updatePaymentScheduleCharges(orgId,uid, c, enqueueSnackbar)
+    await updatePaymentScheduleCharges(
+      orgId,
+      uid,
+      c,
+      blocksViewFeature === 'Construction_Payment_Schedule'
+        ? 'ConstructPayScheduleObj'
+        : 'paymentScheduleObj',
+      enqueueSnackbar
+    )
   }
 
   //function for adding a new row to the table
@@ -255,10 +289,18 @@ const PaymentScheduleForm = ({ title, data, source }) => {
       const { projectId, uid } = data?.phase || {}
       const update = {
         ...newData,
-        dueDate: format(newData.dueDate, 'dd/MM/yyyy'),
+        // dueDate: format(newData.dueDate, 'dd/MM/yyyy'),
       }
       // await createPayment(update, enqueueSnackbar)
-      await addPhasePaymentScheduleCharges(orgId,uid, update, enqueueSnackbar)
+      await addPhasePaymentScheduleCharges(
+        orgId,
+        uid,
+        update,
+        blocksViewFeature === 'Construction_Payment_Schedule'
+          ? 'ConstructPayScheduleObj'
+          : 'paymentScheduleObj',
+        enqueueSnackbar
+      )
     } else {
       setErrorMessages(errorList)
       setIserror(true)
@@ -266,17 +308,19 @@ const PaymentScheduleForm = ({ title, data, source }) => {
   }
 
   return (
-    <div className="h-full shadow-xl flex flex-col pt-6 mb-6 mt-10 bg-[#F1F5F9] rounded-t overflow-y-scroll">
+    <div className="h-full shadow-xl flex flex-col mb-2  rounded-t overflow-y-scroll">
       <div className="z-10">
         {/* <Dialog.Title className="font-semibold text-xl mr-auto ml-3 text-[#053219]">
           {title}
         </Dialog.Title> */}
-        <span className="mr-auto ml-3  text-md font-extrabold tracking-tight uppercase font-body ">
-          {title}
-        </span>
-        <div className="mt-5">
+
+        <div className="mt-1">
           <MaterialCRUDTable
-            title=""
+            title={
+              blocksViewFeature === 'Construction_Payment_Schedule'
+                ? 'Construction Payment Schedule'
+                : 'Plot Payment Schedule'
+            }
             columns={columns}
             data={tableData}
             options={{
@@ -290,6 +334,7 @@ const PaymentScheduleForm = ({ title, data, source }) => {
             }}
             style={{
               padding: '30px',
+              paddingTop: '15px',
               borderRadius: '0px',
               boxShadow: 'none',
             }}

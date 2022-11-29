@@ -24,7 +24,7 @@ const HeadNavBar = () => {
 
   return (
     <div>
-      <div className="flex items-center flex-shrink-0 h-16 px-2  pl-0 bg-white bg-opacity-75 ">
+      <div className="flex items-center flex-shrink-0 h-[8vh] px-2  pl-0 bg-white bg-opacity-75 ">
         {/* <h1 className="text-lg font-medium">redefine.</h1> */}
         <span
           style={{ marginLeft: '-25px' }}

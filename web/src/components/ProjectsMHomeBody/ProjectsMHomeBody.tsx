@@ -165,7 +165,7 @@ const ProjectsMHomeBody = ({ project, onSliderOpen = () => {}, isEdit }) => {
                             className="h-3 w-3 mr-1"
                             aria-hidden="true"
                           />
-                          Brouchers
+                          Broucher
                         </span>
                       </Link>
                       <Link to={routes.projectEdit({ uid })}>

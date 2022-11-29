@@ -1,11 +1,16 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/anchor-is-valid */
+import { spawnSync } from 'child_process'
+
+import { useEffect, useState } from 'react'
+
 import { checkActionCode } from '@firebase/auth'
 import { UserGroupIcon } from '@heroicons/react/outline'
+
 import { Link, routes } from '@redwoodjs/router'
-import { spawnSync } from 'child_process'
-import { useEffect, useState } from 'react'
+
+import { USER_ROLES } from 'src/constants/userRoles'
 import { useAuth } from 'src/context/firebase-auth-context'
 const HeadSideBarDetailView = ({
   pgName,
@@ -84,7 +89,7 @@ const HeadSideBarDetailView = ({
                   onClick={() => setViewable('inProgress')}
                 >
                   <span className="flex items-center ml-">
-                    <span className="text-md font-bold pl-1 ">My Schedule</span>
+                    <span className="text-md font-bold pl-1 ">Tasks</span>
                   </span>
                   <span className="flex ml-auto items-bottom">
                     <span
@@ -353,7 +358,7 @@ const HeadSideBarDetailView = ({
                   onClick={() => setViewable('inProgress')}
                 >
                   <span className="flex items-center ml-">
-                    <span className="text-md font-bold pl-1 ">Finanace</span>
+                    <span className="text-md font-bold pl-1 ">Finance</span>
                   </span>
                   <span className="flex ml-auto items-bottom">
                     <span
@@ -570,7 +575,7 @@ const HeadSideBarDetailView = ({
                 </li>
               </>
             )}
-            {sourceLink === 'leadsScreen' && access.includes('manage_leads') && (
+            {/* {sourceLink === 'leadsScreen' && access.includes('manage_leads') && (
               <>
                 <span
                   className={
@@ -636,45 +641,9 @@ const HeadSideBarDetailView = ({
                     </span>
                   </span>
                 </li>
-                {/* <li className="relative w-full">
-                  <span
-                    className={
-                      'flex items-center text-sm py-3  h-9 w-full  overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
-                      (viewable === 'UpcomingTeam'
-                        ? 'text-blue-600 text-md font-semibold '
-                        : '')
-                    }
-                    onClick={() => setViewable('UpcomingTeam')}
-                  >
-                    <span className="flex items-center">
-                      <span style={{ color: '#692fc2' }}>
-                        <svg
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <g fill="currentColor" fillRule="nonzero">
-                            <path
-                              d="M6 4.5h12A1.5 1.5 0 0119.5 6v2.5h-15V6A1.5 1.5 0 016 4.5z"
-                              opacity="0.1"
-                            ></path>
-                            <path d="M6 4h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2zm0 1a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V6a1 1 0 00-1-1H6zm10 12a1 1 0 110-2 1 1 0 010 2zm-4 0a1 1 0 110-2 1 1 0 010 2zm-4 0a1 1 0 110-2 1 1 0 010 2zm8-4a1 1 0 110-2 1 1 0 010 2zm-4 0a1 1 0 110-2 1 1 0 010 2zm-4 0a1 1 0 110-2 1 1 0 010 2zM7 8h10a.5.5 0 110 1H7a.5.5 0 010-1z"></path>
-                          </g>
-                        </svg>
-                      </span>
-                      <span className="text-sm pl-1">Upcoming Activity</span>
-                    </span>
-                    <span className="flex ml-auto items-bottom">
-                      <span
-                        // style={{ color: '#058527' }}
-                        className="flex ml-auto items-bottom text-xs mt-2"
-                      ></span>
-                    </span>
-                  </span>
-                </li> */}
+
               </>
-            )}
+            )} */}
             {/* {sourceLink != 'hrModule' && (
               <li className="relative">
                 <span
@@ -785,7 +754,9 @@ const HeadSideBarDetailView = ({
                   onClick={() => setViewable('inProgress')}
                 >
                   <span className="flex items-center ml-">
-                    <span className="text-md font-bold pl-1 ">My Leads</span>
+                    <span className="text-md font-bold pl-1 ">
+                      Leads Management
+                    </span>
                   </span>
                   <span className="flex ml-auto items-bottom">
                     <span
@@ -796,7 +767,7 @@ const HeadSideBarDetailView = ({
                 </span>
                 <ul className="px-1 pt-2">
                   {' '}
-                  {['Lead Management', 'Booked', 'Archive'].map((data, inx) => (
+                  {['In Progress', 'Booked', 'Archive'].map((data, inx) => (
                     <li className="relative" key={inx}>
                       <span
                         className={
@@ -806,7 +777,7 @@ const HeadSideBarDetailView = ({
                             : '')
                         }
                         onClick={() =>
-                          data === 'Lead Management'
+                          data === 'In Progress'
                             ? setViewable('inProgress')
                             : data === 'Archive'
                             ? setViewable('archieveLeads')
@@ -839,7 +810,7 @@ const HeadSideBarDetailView = ({
                 </ul>
               </li>
             )}
-            {sourceLink === 'leadsScreen' && access.includes('manage_leads') && (
+            {/* {sourceLink === 'leadsScreen' && access.includes('manage_leads') && (
               <li className="relative">
                 <span
                   className={
@@ -900,7 +871,7 @@ const HeadSideBarDetailView = ({
                   ))}
                 </ul>
               </li>
-            )}
+            )} */}
             {[
               'crmModule',
               'leadsScreen',
@@ -1405,7 +1376,7 @@ const HeadSideBarDetailView = ({
               </ul>
             </li>
 
-            {
+            {!user?.role?.includes(USER_ROLES.CP_AGENT) && (
               <li className="relative">
                 <Link
                   className={
@@ -1426,7 +1397,7 @@ const HeadSideBarDetailView = ({
                 </Link>
                 <ul className="px-1">
                   {' '}
-                  <li className="relative">
+                  {/* <li className="relative">
                     <span
                       className={
                         'flex items-center text-sm py-1  h-9 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
@@ -1467,8 +1438,8 @@ const HeadSideBarDetailView = ({
                         ></span>
                       </span>
                     </span>
-                  </li>
-                  <li className="relative">
+                  </li> */}
+                  {/* <li className="relative">
                     <span
                       className={
                         'flex items-center text-sm py-1  h-9 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
@@ -1509,7 +1480,7 @@ const HeadSideBarDetailView = ({
                         ></span>
                       </span>
                     </span>
-                  </li>
+                  </li> */}
                   <li className="relative">
                     <span
                       className={
@@ -1596,7 +1567,7 @@ const HeadSideBarDetailView = ({
                   </li>
                 </ul>
               </li>
-            }
+            )}
             {sourceLink === 'leadsScreen' && access.includes('manage_leads') && (
               <li className="relative">
                 <Link

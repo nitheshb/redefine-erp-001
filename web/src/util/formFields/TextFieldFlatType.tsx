@@ -1,4 +1,5 @@
 import React from 'react'
+
 import { ErrorMessage, useField } from 'formik'
 // import { InputField, Label } from '@redwoodjs/forms'
 
@@ -18,7 +19,9 @@ export const TextFieldFlat = ({ label, ...props }) => {
         className={` ${meta.touched && meta.error && 'is-invalid'} ${
           field.name === 'blockName' ? '' : '   '
         }
+
           text-right text-sm  bg-grey-lighter text-gray-darker font-medium border-bottom border-[#cccccc]`}
+        style={{ textAlign: 'right' }}
         {...field}
         {...props}
         autoComplete="off"

@@ -1,25 +1,24 @@
 import React, { useEffect, useState } from 'react'
+
 import { Dialog } from '@headlessui/react'
 import { Alert, AlertTitle } from '@mui/lab'
 import { useSnackbar } from 'notistack'
 import Select from 'react-select'
+
 import { MaterialCRUDTable } from 'src/components/MaterialCRUDTable'
 import {
-  getAdditionalCharges,
-  createAdditonalCharges,
-  updateAdditionalCharges,
-  deleteAdditionalCharge,
+  costSheetAdditionalChargesA,
+  csConstruAdditionalChargesA,
+  gstValesA,
+  unitsCancellation,
+} from 'src/constants/projects'
+import {
   addPhaseAdditionalCharges,
   updatePhaseAdditionalCharges,
 } from 'src/context/dbQueryFirebase'
 import { useAuth } from 'src/context/firebase-auth-context'
-import {
-  costSheetAdditionalChargesA,
-  gstValesA,
-  unitsCancellation,
-} from 'src/constants/projects'
 
-const AdditionalChargesForm = ({ title, data, source }) => {
+const AdditionalChargesForm = ({ title, data, source, blocksViewFeature }) => {
   const { user } = useAuth()
 
   const { orgId } = user
@@ -41,10 +40,13 @@ const AdditionalChargesForm = ({ title, data, source }) => {
 
   useEffect(() => {
     const { phase } = data
-    const { additonalChargesObj } = phase
-
-    setTableData(additonalChargesObj)
-  }, [data])
+    const { additonalChargesObj, ConstructOtherChargesObj } = phase
+    const x =
+      blocksViewFeature === 'Construction_Other_Charges'
+        ? ConstructOtherChargesObj
+        : additonalChargesObj
+    setTableData(x)
+  }, [data, blocksViewFeature])
 
   const { enqueueSnackbar } = useSnackbar()
   const defaultValue = (options, value) => {
@@ -75,8 +77,17 @@ const AdditionalChargesForm = ({ title, data, source }) => {
             onChange={(value_x) => {
               onChange(value_x)
             }}
-            options={costSheetAdditionalChargesA}
-            value={defaultValue(costSheetAdditionalChargesA, value)}
+            options={
+              blocksViewFeature === 'Construction_Other_Charges'
+                ? csConstruAdditionalChargesA
+                : costSheetAdditionalChargesA
+            }
+            value={defaultValue(
+              blocksViewFeature === 'Construction_Other_Charges'
+                ? csConstruAdditionalChargesA
+                : costSheetAdditionalChargesA,
+              value
+            )}
             className="text-md mr-2"
           />
         )
@@ -252,7 +263,15 @@ const AdditionalChargesForm = ({ title, data, source }) => {
       return e
     })
     console.log('check this stuff', tableData, c)
-    await updatePhaseAdditionalCharges(orgId,uid, c, enqueueSnackbar)
+    await updatePhaseAdditionalCharges(
+      orgId,
+      uid,
+      c,
+      blocksViewFeature === 'Construction_Other_Charges'
+        ? 'ConstructOtherChargesObj'
+        : 'additonalChargesObj',
+      enqueueSnackbar
+    )
   }
 
   //function for deleting a row
@@ -260,7 +279,15 @@ const AdditionalChargesForm = ({ title, data, source }) => {
     const { uid } = data?.phase || {}
     const c = tableData.filter((e) => e.myId != oldData.myId)
     console.log('check this stuff', c)
-    await updatePhaseAdditionalCharges(orgId,uid, c, enqueueSnackbar)
+    await updatePhaseAdditionalCharges(
+      orgId,
+      uid,
+      c,
+      blocksViewFeature === 'Construction_Other_Charges'
+        ? 'ConstructOtherChargesObj'
+        : 'additonalChargesObj',
+      enqueueSnackbar
+    )
     // await deleteAdditionalCharge(oldData?.uid, enqueueSnackbar)
   }
 
@@ -283,6 +310,9 @@ const AdditionalChargesForm = ({ title, data, source }) => {
         orgId,
         uid,
         additonalChargesObj,
+        blocksViewFeature === 'Construction_Other_Charges'
+          ? 'ConstructOtherChargesObj'
+          : 'additonalChargesObj',
         enqueueSnackbar
       )
     } else {
@@ -298,7 +328,9 @@ const AdditionalChargesForm = ({ title, data, source }) => {
           {title}
         </Dialog.Title> */}
         <span className="mr-auto ml-3  text-md font-extrabold tracking-tight uppercase font-body ">
-          {title}
+          {blocksViewFeature === 'Construction_Other_Charges'
+            ? 'Construction Other Charges (section B)'
+            : 'Plot Other Charges (section B)'}
         </span>
 
         <div className="mt-5 min">

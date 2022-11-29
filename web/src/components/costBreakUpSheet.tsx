@@ -4,43 +4,46 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/label-has-associated-control */
+import { useState, useEffect, createRef, useRef } from 'react'
+
 import { Dialog } from '@headlessui/react'
-import { useState, useEffect, createRef } from 'react'
-import jsPDF from 'jspdf'
-import { renderToString } from 'react-dom/server'
 import { RadioGroup } from '@headlessui/react'
-import { Label, InputField, TextAreaField, FieldError } from '@redwoodjs/forms'
-import Select from 'react-select'
+import { Timestamp } from 'firebase/firestore'
 import { Form, Formik } from 'formik'
-import * as Yup from 'yup'
+import jsPDF from 'jspdf'
 import { useSnackbar } from 'notistack'
-
+import { renderToString } from 'react-dom/server'
 import NumberFormat from 'react-number-format'
+import Select from 'react-select'
+import * as Yup from 'yup'
 
-import { TextField } from 'src/util/formFields/TextField'
-import { CustomSelect } from 'src/util/formFields/selectBoxField'
-import Loader from './Loader/Loader'
-import { PhoneNoField } from 'src/util/formFields/phNoField'
+import { Label, InputField, TextAreaField, FieldError } from '@redwoodjs/forms'
+import { useRouterStateSetter } from '@redwoodjs/router/dist/router-context'
+
+import { apartUnitChargesMock } from 'src/constants/projects'
 import {
   getAllProjects,
   steamUsersListByRole,
   updateLeadCostSheetDetailsTo,
 } from 'src/context/dbQueryFirebase'
 import { useAuth } from 'src/context/firebase-auth-context'
-import { Timestamp } from 'firebase/firestore'
-import { useRouterStateSetter } from '@redwoodjs/router/dist/router-context'
 import {
   sendWhatAppMediaSms,
   sendWhatAppTextSms,
 } from 'src/util/axiosWhatAppApi'
-import AddBookingForm from './bookingForm'
-import BlockingUnitForm from './BlockingUnitForm'
-import UnitTransactionForm from './UnitBillTransactionForm'
-import AddPaymentDetailsForm from './PaymentReceiptForm'
+import CostBreakUpPdf from 'src/util/costBreakUpPdf'
+import { PhoneNoField } from 'src/util/formFields/phNoField'
+import { CustomSelect } from 'src/util/formFields/selectBoxField'
+import { TextField } from 'src/util/formFields/TextField'
 import { TextField2 } from 'src/util/formFields/TextField2'
 import { TextFieldFlat } from 'src/util/formFields/TextFieldFlatType'
-import { apartUnitChargesMock } from 'src/constants/projects'
+
+import BlockingUnitForm from './BlockingUnitForm'
+import AddBookingForm from './bookingForm'
+import Loader from './Loader/Loader'
+import AddPaymentDetailsForm from './PaymentReceiptForm'
 import PaymentScheduleSheet from './paymentScheduleSheet'
+import UnitTransactionForm from './UnitBillTransactionForm'
 
 const CostBreakUpSheet = ({
   selMode,
@@ -65,7 +68,8 @@ const CostBreakUpSheet = ({
   const [newSqftPrice, setNewSqftPrice] = useState(0)
   const [onStep, setOnStep] = useState('costsheet')
   const [soldPrice, setSoldPrice] = useState(0)
-
+  const [csMode, setCsMode] = useState('plot_cs')
+  const pdfExportComponent = useRef(null)
   useEffect(() => {
     console.log('new customer object x', title, leadDetailsObj1)
     if (leadDetailsObj1) {
@@ -77,7 +81,11 @@ const CostBreakUpSheet = ({
 
   useEffect(() => {
     console.log('phase details are ', selPhaseObj)
-    const { additonalChargesObj, payment_scheduleObj } = selPhaseObj
+    const {
+      additonalChargesObj,
+      ConstructOtherChargesObj,
+      payment_scheduleObj,
+    } = selPhaseObj
     console.log('unit details', selUnitDetails)
     const { uid } = selUnitDetails
     const y = leadDetailsObj1[`${uid}_cs`]?.newSqftPrice || ''
@@ -131,7 +139,7 @@ const CostBreakUpSheet = ({
     console.log('initial values ', initformValues)
     setInitialValuesA(initformValues)
 
-    setCostSheetA(merged)
+    setCostSheetA(x)
     console.log('phase details are ', merged, costSheetA)
   }, [selPhaseObj, leadDetailsObj1])
 
@@ -555,14 +563,50 @@ const CostBreakUpSheet = ({
               </div>
 
               {['costsheet', 'allsheets'].includes(onStep) && (
-                <div className="p-9">
-                  <section className="flex flex-row">
-                    <p className="text-md font-extrabold tracking-tight uppercase font-body pb-4">
+                <div className="mt-6 p-2">
+                  <section className="">
+                    {/* <p className="text-md font-extrabold tracking-tight uppercase font-body pb-4">
                       COST SHEET
-                    </p>
+                    </p> */}
+                    <div className=" border-gray-800 flex flex-row justify-between">
+                      <ul
+                        className="flex justify-  rounded-t-lg border-b"
+                        id="myTab"
+                        data-tabs-toggle="#myTabContent"
+                        role="tablist"
+                      >
+                        {[
+                          { lab: 'Plot CostSheet', val: 'plot_cs' },
+                          {
+                            lab: 'Construction CostSheet',
+                            val: 'construct_cs',
+                          },
+                        ].map((d, i) => {
+                          return (
+                            <li key={i} className="mr-2" role="presentation">
+                              <button
+                                className={`inline-block py-3 px-4 text-sm font-medium text-center rounded-t-lg border-b-2  hover:text-blue hover:border-gray-300   ${
+                                  csMode === d.val
+                                    ? 'border-black border-b-3'
+                                    : 'border-transparent'
+                                }`}
+                                type="button"
+                                role="tab"
+                                onClick={() => setCsMode(d.val)}
+                              >
+                                {`${d.lab} `}
+                                {/* <span className="bg-gray-100 px-2 py-1 rounded-full">
+                          {/* {rowsCounter(leadsFetchedData, d.val).length} */}
+                              </button>
+                            </li>
+                          )
+                        })}
+                      </ul>
+                      <section>Show Gst</section>
+                    </div>
                   </section>
                   <div className="flex flex-col mx-0 bg-[#F8FAFC] ">
-                    <div className="px-9 py-10">
+                    <div className="p-2">
                       <Formik
                         enableReinitialize={true}
                         initialValues={initialState}
@@ -580,220 +624,15 @@ const CostBreakUpSheet = ({
                                 boxShadow: '0 1px 12px #f2f2f2',
                               }}
                             >
-                              <table className="divide-y divide-slate-500 w-full overflow-x-auto ">
-                                <thead>
-                                  <tr>
-                                    <th
-                                      scope="col"
-                                      className="py-3.5 pl-3 pr-4 text-left text-sm font-bold uppercase text-slate-700 sm:pr-6 md:pr-0 max-w-[100px] w-[49px]"
-                                    >
-                                      SNo
-                                    </th>
-                                    <th
-                                      scope="col"
-                                      colSpan={3}
-                                      className="py-3.5 pl-4 pr-3 text-left text-sm font-bold uppercase text-slate-700 sm:pl-6 md:pl-0"
-                                    >
-                                      Description
-                                    </th>
-
-                                    <th
-                                      scope="col"
-                                      className="py-3.5 pl-3 pr-4 text-right text-sm font-bold uppercase text-slate-700 sm:pr-6 md:pr-0"
-                                    >
-                                      Amount
-                                    </th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {costSheetA?.map((d1, inx) => (
-                                    <tr
-                                      className="border-b border-[#e5e7eb]"
-                                      key={inx}
-                                    >
-                                      <td
-                                        className="py-4 pl-3 pr-4 text-sm text-center text-slate-500 sm:pr-6 md:pr-0 max-w-[14px]"
-                                        colSpan={1}
-                                      >
-                                        {inx + 1}
-                                        {')'}
-                                      </td>
-                                      <td
-                                        className="py-4 pl-4 pr-3 text-sm sm:pl-6 md:pl-0"
-                                        colSpan={3}
-                                      >
-                                        <div className=" text-gray-700">
-                                          {d1?.component?.label}{' '}
-                                        </div>
-                                        <div className="mt-0.5 text-slate-500 sm:hidden">
-                                          1 unit at $0.00
-                                        </div>
-                                      </td>
-
-                                      <td className="py-4 pl-3 pr-4 text-sm text-right text-gray-800 font-medium sm:pr-6 md:pr-0">
-                                        {d1?.component?.value ===
-                                        'unit_cost_charges' ? (
-                                          <>
-                                            <div className="flex flex-row align-right text-right justify-end">
-                                              {
-                                                selUnitDetails?.super_built_up_area
-                                              }{' '}
-                                              *
-                                              <TextFieldFlat
-                                                label=""
-                                                className
-                                                name="ratePerSqft"
-                                                onChange={(e) => {
-                                                  // setNewSqftPrice(e.target.value)
-                                                  console.log(
-                                                    'changed value is',
-                                                    e.target.value
-                                                  )
-                                                  formik.setFieldValue(
-                                                    'unit_cost_charges',
-                                                    selUnitDetails?.super_built_up_area *
-                                                      e.target.value
-                                                  )
-                                                  setNewSqftPrice(
-                                                    e.target.value
-                                                  )
-                                                  // formik.setFieldValue(
-                                                  //   'ratePerSqft',
-                                                  //   e.target.value
-                                                  // )
-                                                  // console.log(
-                                                  //   'what is =it',
-                                                  //   value.value
-                                                  // )
-                                                  // formik.setFieldValue(
-                                                  //   `${d1?.component?.value}`,
-                                                  //   value
-                                                  // )
-                                                }}
-                                                value={
-                                                  formik.values[
-                                                    `unit_cost_charges`
-                                                  ] /
-                                                  selUnitDetails?.super_built_up_area
-                                                }
-                                                // value={newSqftPrice}
-                                                type="number"
-                                              />
-                                              <TextFieldFlat
-                                                className="hidden"
-                                                label=""
-                                                name={d1?.component?.value}
-                                                // onChange={(value) => {
-                                                //   console.log('what is =it', value.value)
-                                                //   formik.setFieldValue(
-                                                //     `${d1?.component?.value}`,
-                                                //     value
-                                                //   )
-                                                // }}
-                                                // value={
-                                                //   formik.values[`${d1?.component?.value}`]
-                                                // }
-                                                // value={d1?.charges}
-                                                type="number"
-                                              />
-                                              {'='}
-                                              {
-                                                formik.values[
-                                                  `${d1?.component?.value}`
-                                                ]
-                                              }
-                                            </div>
-                                          </>
-                                        ) : (
-                                          <TextFieldFlat
-                                            label=""
-                                            name={d1?.component?.value}
-                                            // onChange={(value) => {
-                                            //   console.log('what is =it', value.value)
-                                            //   formik.setFieldValue(
-                                            //     `${d1?.component?.value}`,
-                                            //     value
-                                            //   )
-                                            // }}
-                                            // value={
-                                            //   formik.values[`${d1?.component?.value}`]
-                                            // }
-                                            // value={d1?.charges}
-                                            type="number"
-                                          />
-                                        )}
-
-                                        {/* <TextField
-                                      label="Floor*"
-                                      name={d1?.component?.value}
-                                      // type="number"
-                                    /> */}
-                                      </td>
-                                    </tr>
-                                  ))}
-                                  {/* {apartUnitChargesMock.map((dat, i) => (
-                                <tr
-                                  className="border-b border-slate-200"
-                                  key={i}
-                                >
-                                  <td
-                                    className="py-4 pl-3 pr-4 text-sm text-center text-slate-500 sm:pr-6 md:pr-0 max-w-[14px]"
-                                    colSpan={1}
-                                  >
-                                    {i + 1}
-                                    {')'}
-                                  </td>
-                                  <td
-                                    className="py-4 pl-4 pr-3 text-sm sm:pl-6 md:pl-0"
-                                    colSpan={3}
-                                  >
-                                    <div className="font-medium text-slate-700">
-                                      {dat?.category}
-                                    </div>
-                                    <div className="mt-0.5 text-slate-500 sm:hidden">
-                                      1 unit at $0.00
-                                    </div>
-                                  </td>
-
-                                  <td className="py-4 pl-3 pr-4 text-sm text-right text-slate-500 sm:pr-6 md:pr-0">
-                                    <TextFieldFlat
-                                      label=""
-                                      name={dat?.name}
-                                      type="number"
-                                    />
-                                  </td>
-                                </tr>
-                              ))} */}
-                                </tbody>
-                                <tfoot>
-                                  <tr>
-                                    <th
-                                      scope="row"
-                                      colSpan={3}
-                                      className="hidden pt-6 pl-6 pr-3 text-sm font-light text-right text-slate-500 sm:table-cell md:pl-0"
-                                    >
-                                      {'     '}
-                                    </th>
-                                    <th
-                                      scope="row"
-                                      className="pt-6 pl-4 pr-3 text-sm font-light text-left text-slate-500"
-                                    ></th>
-                                    <td className="pt-6 pl-3 pr-4 text-sm text-right text-gray-800 sm:pr-6 md:pr-0">
-                                      <span className="font-semibold mr-4">
-                                        Total {'   '}
-                                      </span>
-                                      <span className="text-[#1A9E75] font-medium">
-                                        {' '}
-                                        ₹ {calTotal(costSheetA, formik)}
-                                      </span>
-
-                                      {/* {costSheetA.reduce(function (acc, obj) {
-                                    return acc + obj.x
-                                  }, 0)} */}
-                                    </td>
-                                  </tr>
-                                </tfoot>
-                              </table>
+                              <CostBreakUpPdf
+                                projectDetails={projectDetails}
+                                csMode={csMode}
+                                costSheetA={costSheetA}
+                                pdfExportComponent={pdfExportComponent}
+                                selPhaseObj={selPhaseObj}
+                                leadDetailsObj1={leadDetailsObj1}
+                                selUnitDetails={selUnitDetails}
+                              />
                             </section>
                             <div className="flex flex-col mt-2 p-4 ">
                               <div className="mt-5 text-right md:space-x-3 md:block flex flex-col-reverse mb-6">
@@ -818,7 +657,11 @@ const CostBreakUpSheet = ({
                               )}
                             </Pdf> */}
                                 <button
-                                  onClick={() => downloadPdf()}
+                                  onClick={() => {
+                                    if (pdfExportComponent.current) {
+                                      pdfExportComponent.current.save()
+                                    }
+                                  }}
                                   type="button"
                                   className="mb-4 md:mb-0 hover:scale-110 focus:outline-none bg-white px-5 py-2 text-sm shadow-sm font-medium tracking-wider border text-gray-600 rounded-sm hover:shadow-lg hover:bg-gray-100         hover:bg-teal-200
                                   bg-teal-100
@@ -910,24 +753,6 @@ const CostBreakUpSheet = ({
                 </div>
             </div>
         </div> */}
-              </div>
-              <div className=" p-9 pt-0">
-                <div className="border-t pt-2 border-slate-200">
-                  <div className="text-sm font-light text-slate-700">
-                    <p>
-                      {selMode} Payment terms are 14 days. Please be aware that
-                      according to the Late Payment of Unwrapped Debts Act 0000,
-                      Company are entitled to claim a 00.00 late fee upon
-                      non-payment of debts after this time, at which point a new
-                      invoice will be submitted with the addition of this fee.
-                      If payment of the revised invoice is not received within a
-                      further 14 days, additional interest will be charged to
-                      the overdue account and a statutory rate of 8% plus Bank
-                      of India base of 0.5%, totalling 8.5%. Parties cannot
-                      contract out of the Act’s provisions.
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
           </article>

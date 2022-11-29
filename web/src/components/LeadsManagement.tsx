@@ -1,10 +1,11 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import { MetaTags } from '@redwoodjs/web'
-
 import { useState, useEffect } from 'react'
 
-import { useAuth } from 'src/context/firebase-auth-context'
+import { MetaTags } from '@redwoodjs/web'
+
 import { getLeadsByStatus } from 'src/context/dbQueryFirebase'
+import { useAuth } from 'src/context/firebase-auth-context'
+
 import SiderForm from './SiderForm/SiderForm'
 // import CardItem from '../../components/leadsCard'
 // import BoardData from '../../components/board-data.json'
@@ -52,7 +53,7 @@ const LeadsManagementHome = () => {
         console.log('fetched details are', usersListA.length)
         setLeadsFetchedData(usersListA)
       },
-      { status: ['unassigned'] },
+      { status: ['unassigned'],isCp: user?.role?.includes(USER_ROLES.CP_AGENT), },
       (error) => setLeadsFetchedData([])
     )
     return unsubscribe

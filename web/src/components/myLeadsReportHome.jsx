@@ -2,26 +2,17 @@
 // import ProjectStatsCard from '../ProjectStatsCard/ProjectStatsCard'
 // import PhaseDetailsCard from '../PhaseDetailsCard/PhaseDetailsCard'
 import { useEffect, useState } from 'react'
-import { CalendarIcon, EyeIcon } from '@heroicons/react/outline'
-import { Link, routes } from '@redwoodjs/router'
-import ProjectStatsCard from './ProjectStatsCard/ProjectStatsCard'
-import { Line } from 'react-chartjs-2'
-import { Chart } from 'react-google-charts'
-import { useAuth } from 'src/context/firebase-auth-context'
-import CSVDownloader from 'src/util/csvDownload'
-import { SlimSelectBox } from 'src/util/formFields/slimSelectBoxField'
-import DatePicker from 'react-datepicker'
-import { startOfWeek, startOfDay, startOfMonth, subMonths } from 'date-fns'
-import { serialMyData } from './LeadsTeamReport/SourceLeads'
-import { serialEmployeeLeadData } from './LeadsTeamReport/serialEmployeeLeadData'
-import { USER_ROLES } from 'src/constants/userRoles'
-import { prettyDate } from 'src/util/dateConverter'
 
+import { CalendarIcon, EyeIcon } from '@heroicons/react/outline'
 import {
-  getAllProjects,
-  getMyLeadsByDate,
-  getTodayTodoLeadsDataByUser,
-} from 'src/context/dbQueryFirebase'
+  ChevronDoubleLeftIcon,
+  ChevronDoubleRightIcon,
+} from '@heroicons/react/solid'
+import { yearPickerClasses } from '@mui/lab'
+import { startOfWeek, startOfDay, startOfMonth, subMonths } from 'date-fns'
+import { Line } from 'react-chartjs-2'
+import DatePicker from 'react-datepicker'
+import { Chart } from 'react-google-charts'
 import {
   BarChart,
   Bar,
@@ -31,12 +22,26 @@ import {
   Tooltip,
   Legend,
 } from 'recharts'
-import {
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
-} from '@heroicons/react/solid'
+
+import { Link, routes } from '@redwoodjs/router'
+
 import { sourceList, sourceListItems } from 'src/constants/projects'
-import { yearPickerClasses } from '@mui/lab'
+import { USER_ROLES } from 'src/constants/userRoles'
+import {
+  getAllProjects,
+  getMyLeadsByDate,
+  getTodayTodoLeadsDataByUser,
+} from 'src/context/dbQueryFirebase'
+import { useAuth } from 'src/context/firebase-auth-context'
+import ProjectStatsCard from './ProjectStatsCard/ProjectStatsCard'
+
+import CSVDownloader from 'src/util/csvDownload'
+import { SlimSelectBox } from 'src/util/formFields/slimSelectBoxField'
+
+import { serialMyData } from './LeadsTeamReport/SourceLeads'
+import { serialEmployeeLeadData } from './LeadsTeamReport/serialEmployeeLeadData'
+
+import { prettyDate } from 'src/util/dateConverter'
 
 const valueFeedData = [
   { k: 'Due', v: 300, pic: '' },
@@ -218,13 +223,13 @@ const MyLeadsReportHome = ({ project, onSliderOpen = () => {}, isEdit }) => {
   }
   const getLeadsDataFun = async () => {
     startOfWeek(d)
-    console.log('date is', d, subMonths(startOfMonth(d), 6).getTime())
-    const { access, uid, displayName, orgId } = user
+    console.log('date is ==>', d, subMonths(startOfMonth(d), 6).getTime())
+    const { uid, displayName, orgId } = user
 
     const unsubscribe = getMyLeadsByDate(orgId, {
       cutoffDate: sourceDateRange,
       uid: uid,
-      isCp: user?.role?.includes(USER_ROLES.CP_AGENT)
+      isCp: user?.role?.includes(USER_ROLES.CP_AGENT),
     })
     console.log('my Array data is delayer 1 ', unsubscribe)
     await setLeadsFetchedRawData(await unsubscribe)
@@ -641,7 +646,7 @@ const MyLeadsReportHome = ({ project, onSliderOpen = () => {}, isEdit }) => {
                     <div className=" text-md font-bold leading-none pl-0 mt-4 border-b pb-4 mb-4 ">
                       {`My Leads Stats`}
                     </div>
-{/*
+                    {/*
                     <section className="flex flex-row justify-between mt-[18px]">
                       <section className="flex">
                         {!isEdit && (
@@ -1257,7 +1262,6 @@ const MyLeadsReportHome = ({ project, onSliderOpen = () => {}, isEdit }) => {
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </section>

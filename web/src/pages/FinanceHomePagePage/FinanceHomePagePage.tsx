@@ -1,21 +1,26 @@
 import { useState, useEffect } from 'react'
-import HeadNavBar from '../../components/HeadNavBar/HeadNavBar'
-import DummyBodyLayout from '../../components/DummyBodyLayout/DummyBodyLayout'
-import HeadSideBar from '../../components/HeadSideBar/HeadSideBar'
-import SiderForm from '../../components/SiderForm/SiderForm'
-import ProjectsMHomeBody from '../../components/ProjectsMHomeBody/ProjectsMHomeBody'
-import HeadSideBarDetailView from 'src/components/HeadDetailSideBar'
-import { MetaTags } from '@redwoodjs/web'
-import { getAllProjects } from 'src/context/dbQueryFirebase'
+
 // import { ResponsiveBar } from '@nivo/bar'
 import { EyeIcon, PencilIcon } from '@heroicons/react/outline'
+
 import { Link, routes } from '@redwoodjs/router'
-import AllBankDetailsView from 'src/components/All_BankDetailsView'
-import FinanceTransactionsHome from 'src/components/TableComp/FinanceTransactionsHome'
+import { MetaTags } from '@redwoodjs/web'
+
 import CrmHome from 'src/components/A_CRMcomp/CrmHome'
+import AllBankDetailsView from 'src/components/All_BankDetailsView'
+import HeadSideBarDetailView from 'src/components/HeadDetailSideBar'
 import HeadSideBarDetailView2 from 'src/components/HeadDetailSideBar2'
 import HeadNavBar2 from 'src/components/HeadNavBar/HeadNavBar2'
+import FinanceTransactionsHome from 'src/components/TableComp/FinanceTransactionsHome'
+import LeadsDummyHome from 'src/components/TableComp/LeadsDummyHome'
+import { getAllProjects } from 'src/context/dbQueryFirebase'
 import { useAuth } from 'src/context/firebase-auth-context'
+
+import DummyBodyLayout from '../../components/DummyBodyLayout/DummyBodyLayout'
+import HeadNavBar from '../../components/HeadNavBar/HeadNavBar'
+import HeadSideBar from '../../components/HeadSideBar/HeadSideBar'
+import ProjectsMHomeBody from '../../components/ProjectsMHomeBody/ProjectsMHomeBody'
+import SiderForm from '../../components/SiderForm/SiderForm'
 
 const FinanceHomePagePage = () => {
   const { user } = useAuth()
@@ -578,6 +583,15 @@ const FinanceHomePagePage = () => {
                   <div className="flex flex-row h-full">
                     <div className="flex flex-col w-full ">
                       <FinanceTransactionsHome leadsTyper={'financeModule'} />
+                    </div>
+                  </div>
+                </div>
+              )}
+              {viewable === 'LeadsDummy' && (
+                <div className=" h-full rounded-3xl">
+                  <div className="flex flex-row h-full">
+                    <div className="flex flex-col w-full ">
+                      <LeadsDummyHome leadsTyper={'financeModule'} />
                     </div>
                   </div>
                 </div>

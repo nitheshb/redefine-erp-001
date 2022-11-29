@@ -1,23 +1,26 @@
+import { pid } from 'process'
+
 import { Fragment, useState } from 'react'
+
 import { Dialog, Transition } from '@headlessui/react'
 import { XIcon } from '@heroicons/react/outline'
-import DialogFormBody from '../DialogFormBody/DialogFormBody'
-import AddBlockForm from '../AddBlockForm/AddBlockForm'
-import AddPhaseForm from '../AddPhaseForm/AddPhaseForm'
-import LeadsDropHomes from '../LeadUplodCsv/uploadHome'
-import AddLeadForm from '../AddLeadForm'
-import CustomerProfileSideView from '../customerProfileSideView'
-import AdditionalChargesForm from '../AdditionalChargesForm/AdditionalChargesForm'
-import PaymentScheduleForm from '../PaymentScheduleForm/PaymentScheduleForm'
-import MoreDetailsPhaseForm from '../MoreDetailsPhaseForm/MoreDetailsPhaseForm'
-import AddUnit from '../AddUnit'
-import { pid } from 'process'
+
 import AddBankDetailsForm from '../addBankDetailsForm'
-import TransactionUpdateSideView from '../transactionUpdateSideView'
-import ProjPhaseHome from '../ProjPhaseHome/ProjPhaseHome'
-import InventoryViewSideForm from '../DialogFormBody/InventoryViewSideView'
-import CrmUnitSideView from '../crmUnitSideView'
+import AddBlockForm from '../AddBlockForm/AddBlockForm'
+import AdditionalChargesForm from '../AdditionalChargesForm/AdditionalChargesForm'
+import AddLeadForm from '../AddLeadForm'
+import AddPhaseForm from '../AddPhaseForm/AddPhaseForm'
 import AddTaskForm from '../AddTaskForm'
+import AddUnit from '../AddUnit'
+import CrmUnitSideView from '../crmUnitSideView'
+import CustomerProfileSideView from '../customerProfileSideView'
+import DialogFormBody from '../DialogFormBody/DialogFormBody'
+import InventoryViewSideForm from '../DialogFormBody/InventoryViewSideView'
+import LeadsDropHomes from '../LeadUplodCsv/uploadHome'
+import MoreDetailsPhaseForm from '../MoreDetailsPhaseForm/MoreDetailsPhaseForm'
+import PaymentScheduleForm from '../PaymentScheduleForm/PaymentScheduleForm'
+import ProjPhaseHome from '../ProjPhaseHome/ProjPhaseHome'
+import TransactionUpdateSideView from '../transactionUpdateSideView'
 import ViewUnitDetails from '../ViewUnitDetails'
 
 const SiderForm = ({
@@ -38,11 +41,10 @@ const SiderForm = ({
   unitViewerrr,
   unitsViewMode,
   setUnitsViewMode,
-  leadDetailsObj
+  leadDetailsObj,
 }) => {
   // dont write too many here
   //  this is for customerProfileSideView
-
 
   return (
     <Transition.Root show={open || false} as={Fragment}>

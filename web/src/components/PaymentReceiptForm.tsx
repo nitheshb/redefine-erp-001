@@ -47,6 +47,8 @@ const AddPaymentDetailsForm = ({
   const bankData = {}
 
   const onSubmit = async (data, resetForm) => {
+
+
     // get booking details, leadId, unitDetails,
     //  from existing object send values of
     //  booking

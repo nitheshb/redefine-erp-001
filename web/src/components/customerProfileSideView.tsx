@@ -3,8 +3,20 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { Fragment, useEffect, useState } from 'react'
+
+import EmailForm from './customerProfileView/emailForm'
+import Confetti from './shared/confetti'
+
 import '../styles/myStyles.css'
 import { Menu } from '@headlessui/react'
+import { Listbox, Transition } from '@headlessui/react'
+import {
+  ArrowRightIcon,
+  PhoneIcon,
+  DeviceMobileIcon,
+  MailIcon,
+} from '@heroicons/react/outline'
+import CalendarIcon from '@heroicons/react/outline/CalendarIcon'
 import {
   BadgeCheckIcon,
   CheckIcon,
@@ -15,25 +27,17 @@ import {
   ViewGridIcon,
   XIcon,
 } from '@heroicons/react/solid'
-import { v4 as uuidv4 } from 'uuid'
-import {
-  ArrowRightIcon,
-  PhoneIcon,
-  DeviceMobileIcon,
-  MailIcon,
-} from '@heroicons/react/outline'
-import { CustomSelect } from 'src/util/formFields/selectBoxField'
-import SortComp from './sortComp'
-import { ErrorMessage, Form, Formik } from 'formik'
-import * as Yup from 'yup'
-
-import { Listbox, Transition } from '@headlessui/react'
 import { SelectorIcon, DownloadIcon } from '@heroicons/react/solid'
-import { useAuth } from 'src/context/firebase-auth-context'
+import ClockIcon from '@heroicons/react/solid/ClockIcon'
+import PlusCircleIcon from '@heroicons/react/solid/PlusCircleIcon'
+import FileUploadIcon from '@mui/icons-material/FileUpload'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
-import { storage } from 'src/context/firebaseConfig'
+import { ErrorMessage, Form, Formik, useFormik } from 'formik'
+import DatePicker from 'react-datepicker'
+import { useDropzone } from 'react-dropzone'
 import toast from 'react-hot-toast'
-import LogSkelton from './shimmerLoaders/logSkelton'
+import { v4 as uuidv4 } from 'uuid'
+import * as Yup from 'yup'
 
 import {
   addLeadScheduler,
@@ -59,10 +63,8 @@ import {
   editAddTaskCommentDB,
   rescheduleTaskDB,
 } from 'src/context/dbQueryFirebase'
-import { useDropzone } from 'react-dropzone'
-import PlusCircleIcon from '@heroicons/react/solid/PlusCircleIcon'
-import ClockIcon from '@heroicons/react/solid/ClockIcon'
-import CalendarIcon from '@heroicons/react/outline/CalendarIcon'
+import { useAuth } from 'src/context/firebase-auth-context'
+import { storage } from 'src/context/firebaseConfig'
 import {
   getDifferenceInDays,
   getDifferenceInHours,
@@ -71,29 +73,37 @@ import {
   prettyDateTime,
   timeConv,
 } from 'src/util/dateConverter'
+import { CustomSelect } from 'src/util/formFields/selectBoxField'
 
-import DatePicker from 'react-datepicker'
+import LogSkelton from './shimmerLoaders/logSkelton'
+import SortComp from './sortComp'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import { setHours, setMinutes } from 'date-fns'
 import { Timestamp } from 'firebase/firestore'
+
 import StatusDropComp from './statusDropComp'
 import AssigedToDropComp from './assignedToDropComp'
 import Loader from './Loader/Loader'
+
 import {
   ArrowBackRounded,
   DriveEtaOutlined,
   VerticalAlignBottom,
 } from '@mui/icons-material'
+
 import ProjPhaseHome from './ProjPhaseHome/ProjPhaseHome'
 import AddBookingForm from './bookingForm'
+
 import { useSnackbar } from 'notistack'
 import { async } from '@firebase/util'
+
 import SelectDropDownComp from './comps/dropDownhead'
 import EditLeadTask from './Comp_CustomerProfileSideView/EditLeadTask'
 import AddLeadTaskComment from './Comp_CustomerProfileSideView/AddLeadTaskComment'
 import LeadTaskDisplayHead from './Comp_CustomerProfileSideView/LeadTaskDisplayHead'
 import LeadTaskFooter from './Comp_CustomerProfileSideView/LeadTaskFooter'
+
 import { USER_ROLES } from 'src/constants/userRoles'
 import { currentStatusDispFun } from 'src/util/leadStatusDispFun'
 import { sendWhatAppTextSms1 } from 'src/util/axiosWhatAppApi'
@@ -186,6 +196,7 @@ export default function CustomerProfileSideView({
   const { orgId } = user
   const [fetchedUsersList, setfetchedUsersList] = useState([])
   const [usersList, setusersList] = useState([])
+  const [uploadFile, setUploadFile] = useState()
 
   // const [leadStatus, setLeadStatus] = useState([])
   const [selFeature, setFeature] = useState('appointments')
@@ -221,7 +232,7 @@ export default function CustomerProfileSideView({
   const [value, setValue] = useState(d)
 
   // const [startDate, setStartDate] = useState(d)
-  const [startDate, setStartDate] = useState(d)
+  const [startDate, setStartDate] = useState(d.getTime() + 60000)
 
   const [selected, setSelected] = useState(people[0])
   const [taskDetails, setTaskDetails] = useState('')
@@ -242,6 +253,20 @@ export default function CustomerProfileSideView({
   const [selProjectIs, setSelProjectIs] = useState({
     projectName: '',
     uid: '',
+  })
+  // email formik
+  const emailFormik = useFormik({
+    initialValues: {
+      fromEmail: '',
+      toEmail: '',
+      subject: '',
+      message: '',
+      attachFile: '',
+    },
+
+    onSubmit: (values) => {
+      console.log(values)
+    },
   })
 
   const [leadDetailsObj, setLeadDetailsObj] = useState({})
@@ -382,7 +407,7 @@ export default function CustomerProfileSideView({
     setAssignerName(customerDetails?.assignedToObj?.label)
     setSelProjectIs({ projectName: Project, uid: ProjectId })
     setStatusTimeLineA(
-      [...statusTimeLineA, ...(customerDetails?.coveredA || [])] || ['new']
+      [...statusTimeLineA, ...(customerDetails?.coveredA?.a || [])] || ['new']
     )
 
     // setLeadStatus(Status)
@@ -610,33 +635,33 @@ export default function CustomerProfileSideView({
     console.log('stream logs', steamLeadLogs)
     await setLeadsFetchedActivityData(steamLeadLogs)
 
-    // const unsubscribe = steamLeadActivityLog(
-    //   orgId,
-    //   (doc) => {
-    //     console.log('my total fetched list is yo yo ', doc.data())
-    //     const usersList = doc.data()
-    //     const usersListA = []
+    const unsubscribe = steamLeadActivityLog(
+      orgId,
+      (doc) => {
+        console.log('my total fetched list is yo yo ', doc.data())
+        const usersList = doc.data()
+        const usersListA = []
 
-    //     Object.entries(usersList).forEach((entry) => {
-    //       const [key, value] = entry
-    //       usersListA.push(value)
-    //       console.log('my total fetched list is 3', `${key}: ${value}`)
-    //     })
-    //     // for (const key in usersList) {
-    //     //   if (usersList.hasOwnProperty(key)) {
-    //     //     console.log(`${key} : ${usersList[key]}`)
-    //     //     console.log(`my total fetched list is 2 ${usersList[key]}`)
-    //     //   }
-    //     // }
+        Object.entries(usersList).forEach((entry) => {
+          const [key, value] = entry
+          usersListA.push(value)
+          console.log('my total fetched list is 3', `${key}: ${value}`)
+        })
+        // for (const key in usersList) {
+        //   if (usersList.hasOwnProperty(key)) {
+        //     console.log(`${key} : ${usersList[key]}`)
+        //     console.log(`my total fetched list is 2 ${usersList[key]}`)
+        //   }
+        // }
 
-    //     console.log('my total fetched list is', usersListA.length)
-    //     setLeadsFetchedActivityData(usersListA)
-    //   },
-    //   {
-    //     uid: id,
-    //   },
-    //   (error) => setLeadsFetchedActivityData([])
-    // )
+        console.log('my total fetched list is', usersListA.length)
+        setLeadsFetchedActivityData(usersListA)
+      },
+      {
+        uid: id,
+      },
+      (error) => setLeadsFetchedActivityData([])
+    )
 
     //  lead Schedule list
     steamLeadScheduleLog(
@@ -891,10 +916,10 @@ export default function CustomerProfileSideView({
     // updateSchLog(orgId, id, data.ct, 'completed', schStsA)
   }
   const editTaskFun = (data) => {
-    console.log('clicked schedule is', data)
+    console.log('clicked schedule is', data, startDate, addCommentTime)
 
     const inx = schStsMA.indexOf(data.ct)
-    data.schTime = startDate.getTime()
+    data.schTime = startDate
     data.notes = takTitle
     const x = schStsA
     x[inx] = 'pending'
@@ -1005,8 +1030,17 @@ export default function CustomerProfileSideView({
     if (data?.stsType === 'visitfixed') {
       setShowVisitFeedBackStatusFun(data, 'visitdone')
     } else {
-      setAddTaskCommentObj(data)
-      setCloseTask(true)
+      if (leadSchFetchedData?.filter((d) => d?.sts === 'pending').length != 1) {
+        setAddTaskCommentObj(data)
+        setCloseTask(true)
+      } else {
+        enqueueSnackbar(
+          `Oops..! You can close this task by changing Lead status`,
+          {
+            variant: 'error',
+          }
+        )
+      }
     }
   }
   const addFeedbackFun = async (data) => {
@@ -1729,7 +1763,11 @@ export default function CustomerProfileSideView({
                       })}
                     </ul>
                   </div>
-
+                  {selFeature == 'email' && (
+                    <>
+                      <EmailForm />
+                    </>
+                  )}
                   {selFeature === 'notes' && (
                     <div className="flex flex-col justify-between border pt-6">
                       {leadNotesFetchedData.length === 0 && !addNote && (
@@ -1747,9 +1785,10 @@ export default function CustomerProfileSideView({
                           <button onClick={() => selFun()}>
                             <time className="block mb-2 text-sm font-normal leading-none text-gray-400 ">
                               Better always attach a string
-                              <span className="text-blue-600"> Add Notes</span>
+                              <span className="text-blue-600"> Add</span>
                             </time>
                           </button>
+                          <Confetti />
                         </div>
                       )}
                       {addNote && (

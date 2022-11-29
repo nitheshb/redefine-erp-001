@@ -5,7 +5,7 @@ import {
   useEffect,
   useReducer,
 } from 'react'
-import { auth } from './firebaseConfig'
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -17,9 +17,13 @@ import {
   confirmPasswordReset,
 } from 'firebase/auth'
 import { useDispatch } from 'react-redux'
+
 import { navigate, routes } from '@redwoodjs/router'
+
 import { getUserSuccess } from 'src/state/actions/user'
+
 import { getUser, getSelectedRoleAccess } from './dbQueryFirebase'
+import { auth } from './firebaseConfig'
 
 export interface User {
   uid: string
@@ -34,12 +38,14 @@ interface State {
   isInitialized: boolean
   isAuthenticated: boolean
   user: User | null
+  isLoaded: boolean
 }
 
 const initialState: State = {
   isAuthenticated: false,
   isInitialized: false,
   user: null,
+  isLoaded: false,
 }
 
 type AuthStateChangedAction = {
