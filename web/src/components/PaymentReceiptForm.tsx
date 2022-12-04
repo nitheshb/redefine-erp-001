@@ -1,35 +1,24 @@
-import { Dialog } from '@headlessui/react'
-import { useState } from 'react'
-import { Form, Formik, Field } from 'formik'
-import * as Yup from 'yup'
+import { useState, useEffect } from 'react'
+
+import { arrayUnion } from 'firebase/firestore'
+import { Form, Formik } from 'formik'
 import { useSnackbar } from 'notistack'
+import * as Yup from 'yup'
+
 import { useParams } from '@redwoodjs/router'
-import {
-  InputAdornment,
-  TextField as MuiTextField,
-  Checkbox,
-} from '@mui/material'
-import { Add, Remove } from '@mui/icons-material'
-import { format, isDate, parse } from 'date-fns'
-import Loader from 'src/components/Loader/Loader'
-import { TextField } from 'src/util/formFields/TextField'
-import { DateField } from 'src/util/formFields/DateField'
-import { CustomSelect } from 'src/util/formFields/selectBoxField'
-import {
-  bankPreferredType,
-  banksList,
-  unitsCancellation,
-} from 'src/constants/projects'
-import { AreaConverter } from 'src/components/AreaConverter'
+
+import { paymentMode, statesList } from 'src/constants/projects'
 import {
   addPaymentReceivedEntry,
   createBookedCustomer,
+  steamBankDetailsList,
   updateLeadStatus,
   updateUnitAsBooked,
 } from 'src/context/dbQueryFirebase'
-import { TextField2 } from 'src/util/formFields/TextField2'
-import { arrayUnion } from 'firebase/firestore'
 import { useAuth } from 'src/context/firebase-auth-context'
+import { CustomSelect } from 'src/util/formFields/selectBoxField'
+import { MultiSelectMultiLineField } from 'src/util/formFields/selectBoxMultiLineField'
+import { TextField2 } from 'src/util/formFields/TextField2'
 
 const AddPaymentDetailsForm = ({
   title,
@@ -42,13 +31,35 @@ const AddPaymentDetailsForm = ({
   const { orgId } = user
   const [loading, setLoading] = useState(false)
   const [openAreaFields, setOpenAreaFields] = useState(false)
+  const [bankDetailsA, setBankDetailsA] = useState([])
+
   const { enqueueSnackbar } = useSnackbar()
   const { uid } = useParams()
   const bankData = {}
 
+  useEffect(() => {
+    const unsubscribe = steamBankDetailsList(
+      orgId,
+      (querySnapshot) => {
+        const bankA = querySnapshot.docs.map((docSnapshot) => {
+          const x = docSnapshot.data()
+          x.id = docSnapshot.id
+          return x
+        })
+        bankA.map((user) => {
+          user.label = user?.accountName
+          user.value = user?.accountNo
+        })
+        console.log('fetched users list is', bankA)
+        setBankDetailsA([...bankA])
+      },
+      (error) => setBankDetailsA([])
+    )
+
+    return unsubscribe
+  }, [])
+
   const onSubmit = async (data, resetForm) => {
-
-
     // get booking details, leadId, unitDetails,
     //  from existing object send values of
     //  booking
@@ -152,8 +163,8 @@ const AddPaymentDetailsForm = ({
 
   const initialState = {
     amount: bankData?.amount || '',
-
-    mode: bankData?.mode || '',
+    towardsBankDocId: '',
+    mode: bankData?.mode || 'cheque',
     payto: bankData?.payto || '',
     chequeno: bankData?.chequeno || '',
     dated: bankData?.dated || '',
@@ -177,14 +188,14 @@ const AddPaymentDetailsForm = ({
 
   return (
     <div className="">
-      <div className="px-4 sm:px-6  z-10">
+      <div className="">
         {/* <Dialog.Title className=" font-semibold text-xl mr-auto ml-3 text-[#053219]">
           {title}
         </Dialog.Title> */}
       </div>
 
       <div className="grid gap-8 grid-cols-1">
-        <div className="flex flex-col rounded-lg bg-white m-4">
+        <div className="flex flex-col rounded-lg bg-white mt-10">
           <div className="mt-0">
             <Formik
               enableReinitialize={true}
@@ -199,43 +210,85 @@ const AddPaymentDetailsForm = ({
                   <div className="form">
                     {/* Phase Details */}
 
-                    <section className=" py-1 bg-blueGray-50">
-                      <div className="w-full px-4 mx-auto ">
-                        <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-100 border-0">
-                          <div className="rounded-t bg-[#F1F5F9] mb-0 px-6 py-6">
+                    <section className="  bg-blueGray-50">
+                      <div className="w-full mx-auto ">
+                        <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-[#F9FBFB] border-0">
+                          <div className="rounded-t bg-[#F1F5F9] mb-0 px-3 py-2">
                             <div className="text-center flex justify-between">
-                              <p className="text-md font-extrabold tracking-tight uppercase font-body">
+                              <p className="text-xs font-extrabold tracking-tight uppercase font-body my-1">
                                 Payment Entry
                               </p>
-                              <button
-                                className="bg-pink-500 text-white active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150"
-                                type="button"
-                              >
-                                Receipt Download
-                              </button>
                             </div>
                           </div>
-                          <div className="flex-auto px-4 lg:px-10 py-10 pt-4">
-                            <section>
-                              <h6 className="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
+                          <div className="flex-auto px-2 py-4 ">
+                            <section
+                              className="bg-[#fff] p-4 rounded-md "
+                              style={{
+                                boxShadow: '0 1px 12px #f2f2f2',
+                              }}
+                            >
+                              <h6 className="text-blueGray-400 text-sm mt-3 ml-3 mb-6 font-bold uppercase">
                                 Booking Amount Details
                               </h6>
                               <div className="flex flex-wrap">
                                 <div className="w-full lg:w-6/12 px-4">
+                                  <div className="w-full mb-3">
+                                    <CustomSelect
+                                      name="mode"
+                                      label="Payment Mode"
+                                      className="input"
+                                      onChange={({ value }) => {
+                                        formik.setFieldValue('mode', value)
+                                      }}
+                                      value={formik.values.mode}
+                                      options={paymentMode}
+                                    />
+                                  </div>
+                                </div>
+                                <div className="w-full lg:w-6/12 px-4">
+                                  <div className=" mb-3 w-full">
+                                    <MultiSelectMultiLineField
+                                      label="Towards Account"
+                                      name="towardsBankDocId"
+                                      onChange={(payload) => {
+                                        console.log(
+                                          'changed value is ',
+                                          payload
+                                        )
+                                        const { value, id, accountName } =
+                                          payload
+                                        formik.setFieldValue(
+                                          'builderName',
+                                          accountName
+                                        )
+                                        formik.setFieldValue(
+                                          'landlordBankDocId',
+                                          id
+                                        )
+
+                                        formik.setFieldValue(
+                                          'towardsBankDocId',
+                                          id
+                                        )
+                                      }}
+                                      value={formik.values.towardsBankDocId}
+                                      options={bankDetailsA}
+                                    />
+                                  </div>
+                                </div>
+                                <div className="w-full lg:w-6/12 px-4">
+                                  {/* <div className="relative w-full mb-3">
+                                    <TextField2
+                                      label="Mode"
+                                      name="mode"
+                                      type="text"
+                                    />
+                                  </div> */}
                                   <div className="relative w-full mb-3">
                                     <TextField2
                                       label="Amount"
                                       name="amount"
                                       type="number"
-                                    />
-                                  </div>
-                                </div>
-                                <div className="w-full lg:w-6/12 px-4">
-                                  <div className="relative w-full mb-3">
-                                    <TextField2
-                                      label="Mode"
-                                      name="mode"
-                                      type="text"
                                     />
                                   </div>
                                 </div>
@@ -270,7 +323,7 @@ const AddPaymentDetailsForm = ({
                               </div>
                               <hr className="mt-6 border-b-1 border-blueGray-300" />
 
-                              <h6 className="text-blueGray-400 text-sm mt-3 pt-4 mb-6 font-bold uppercase">
+                              <h6 className="text-blueGray-400 text-sm mt-3 ml-3 pt-4 mb-6 font-bold uppercase">
                                 Source Of Booking
                               </h6>
                               <div className="flex flex-wrap">
@@ -296,11 +349,16 @@ const AddPaymentDetailsForm = ({
                               <hr className="mt-6 border-b-1 border-blueGray-300" />
                               <div className="mt-5 text-right md:space-x-3 md:block flex flex-col-reverse mb-6">
                                 <button
-                                  className="mb-2 md:mb-0 bg-green-400 px-5 py-2 text-sm shadow-sm font-medium tracking-wider text-white rounded-xs hover:shadow-lg hover:bg-green-500"
+                                  className="bg-pink-500 text-white active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150"
+                                  type="button"
+                                >
+                                  Receipt Download
+                                </button>
+                                <button
+                                  className="bg-green-400 text-gray-600 active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150"
                                   type="submit"
                                   disabled={loading}
                                 >
-                                  {/* {loading && <Loader />} */}
                                   {'Book'}
                                 </button>
                               </div>

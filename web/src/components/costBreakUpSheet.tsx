@@ -8,8 +8,9 @@ import { useState, useEffect, createRef, useRef } from 'react'
 
 import { Dialog } from '@headlessui/react'
 import { RadioGroup } from '@headlessui/react'
+import { Checkbox } from '@mui/material'
 import { Timestamp } from 'firebase/firestore'
-import { Form, Formik } from 'formik'
+import { Form, Formik, Field } from 'formik'
 import jsPDF from 'jspdf'
 import { useSnackbar } from 'notistack'
 import { renderToString } from 'react-dom/server'
@@ -345,22 +346,22 @@ const CostBreakUpSheet = ({
         <div className="max-w-5xl mx-auto py-  bg-white">
           <article className="overflow-hidden">
             <div className="bg-[white] rounded-b-md">
-              <div className="p-5 mt-">
+              <div className=" mt-">
                 <div className="mx-4 p-4">
                   <div className="flex items-center">
                     <div
                       className={`flex items-center  relative ${
                         ['costsheet'].includes(onStep)
                           ? 'text-white'
-                          : 'text-teal-600'
+                          : 'text-[#5671fc] '
                       }`}
                       onClick={() => moveStep('costsheet')}
                     >
                       <div
                         className={`rounded-full transition duration-500 ease-in-out h-12 w-12 py-3 border-2 ${
                           ['costsheet'].includes(onStep)
-                            ? 'bg-teal-600 border-teal-600'
-                            : 'border-teal-600'
+                            ? 'bg-[#5671fc] border-[#5671fc] '
+                            : 'border-[#5671fc] '
                         } `}
                       >
                         <svg
@@ -381,27 +382,27 @@ const CostBreakUpSheet = ({
                       <div
                         className={`absolute top-0 -ml-10 text-center mt-16 w-32 text-xs font-medium uppercase ${
                           ['costsheet'].includes(onStep)
-                            ? 'text-teal-600'
+                            ? 'text-[#5671fc] '
                             : 'text-gray-500'
                         }`}
                       >
                         Cost sheet
                       </div>
                     </div>
-                    <div className="flex-auto border-t-2 transition duration-500 ease-in-out border-teal-600"></div>
-                    <div
+                    <div className="flex-auto border-t-2 transition duration-500 ease-in-out border-[#5671fc] "></div>
+                    {/* <div
                       className={`flex items-center  relative ${
                         ['payment_sch'].includes(onStep)
                           ? 'text-white'
-                          : 'text-teal-600'
+                          : 'text-[#5671fc] '
                       }`}
                       onClick={() => moveStep('payment_sch')}
                     >
                       <div
                         className={`rounded-full transition duration-500 ease-in-out h-12 w-12 py-3 border-2 ${
                           ['payment_sch'].includes(onStep)
-                            ? 'bg-teal-600 border-teal-600'
-                            : 'border-teal-600'
+                            ? 'bg-[#5671fc] border-[#5671fc] '
+                            : 'border-[#5671fc] '
                         } `}
                       >
                         <svg
@@ -423,27 +424,27 @@ const CostBreakUpSheet = ({
                       <div
                         className={`absolute top-0 -ml-10 text-center mt-16 w-32 text-xs font-medium uppercase ${
                           ['payment_sch'].includes(onStep)
-                            ? 'text-teal-600'
+                            ? 'text-[#5671fc] '
                             : 'text-gray-500'
                         }`}
                       >
                         Payment Schedule
                       </div>
-                    </div>
-                    <div className="flex-auto border-t-2 transition duration-500 ease-in-out border-gray-300"></div>
+                    </div> */}
+                    {/* <div className="flex-auto border-t-2 transition duration-500 ease-in-out border-gray-300"></div> */}
                     <div
                       className={`flex items-center  relative ${
                         ['customerDetails'].includes(onStep)
                           ? 'text-white'
-                          : 'text-teal-600'
+                          : 'text-[#5671fc] '
                       }`}
                       onClick={() => moveStep('customerDetails')}
                     >
                       <div
                         className={`rounded-full transition duration-500 ease-in-out h-12 w-12 py-3 border-2 ${
                           ['customerDetails'].includes(onStep)
-                            ? 'bg-teal-600 border-teal-600'
-                            : 'border-teal-600'
+                            ? 'bg-[#5671fc] border-[#5671fc] '
+                            : 'border-[#5671fc] '
                         } `}
                       >
                         <svg
@@ -467,7 +468,7 @@ const CostBreakUpSheet = ({
                       <div
                         className={`absolute top-0 -ml-10 text-center mt-16 w-32 text-xs font-medium uppercase ${
                           ['customerDetails'].includes(onStep)
-                            ? 'text-teal-600'
+                            ? 'text-[#5671fc] '
                             : 'text-gray-500'
                         }`}
                       >
@@ -479,18 +480,18 @@ const CostBreakUpSheet = ({
                       className={`flex items-center  relative ${
                         ['booksheet'].includes(onStep)
                           ? 'text-white'
-                          : 'text-teal-600'
+                          : 'text-[#5671fc] '
                       }`}
                       onClick={() => moveStep('booksheet')}
                     >
                       <div
                         className={`rounded-full transition duration-500 ease-in-out h-12 w-12 py-3 border-2 ${
                           ['booksheet'].includes(onStep)
-                            ? 'bg-teal-600 border-teal-600'
-                            : 'border-teal-600'
+                            ? 'bg-[#5671fc] border-[#5671fc] '
+                            : 'border-[#5671fc] '
                         } `}
                       >
-                        <svg
+                        {/* <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="100%"
                           height="100%"
@@ -504,12 +505,31 @@ const CostBreakUpSheet = ({
                         >
                           <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                           <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg> */}
+
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="100%"
+                          height="100%"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="feather feather-mail "
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0"
+                          />
                         </svg>
                       </div>
                       <div
                         className={`absolute top-0 -ml-10 text-center mt-16 w-32 text-xs font-medium uppercase ${
                           ['booksheet'].includes(onStep)
-                            ? 'text-teal-600'
+                            ? 'text-[#5671fc] '
                             : 'text-gray-500'
                         }`}
                       >
@@ -521,15 +541,15 @@ const CostBreakUpSheet = ({
                       className={`flex items-center  relative ${
                         ['blocksheet'].includes(onStep)
                           ? 'text-white'
-                          : 'text-teal-600'
+                          : 'text-[#5671fc] '
                       }`}
                       onClick={() => moveStep('blocksheet')}
                     >
                       <div
                         className={`rounded-full transition duration-500 ease-in-out h-12 w-12 py-3 border-2 ${
                           ['blocksheet'].includes(onStep)
-                            ? 'bg-teal-600 border-teal-600'
-                            : 'border-teal-600'
+                            ? 'bg-[#5671fc] border-[#5671fc] '
+                            : 'border-[#5671fc] '
                         } `}
                       >
                         <svg
@@ -544,14 +564,17 @@ const CostBreakUpSheet = ({
                           strokeLinejoin="round"
                           className="feather feather-mail "
                         >
-                          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                          <polyline points="22,6 12,13 2,6"></polyline>
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M10.05 4.575a1.575 1.575 0 10-3.15 0v3m3.15-3v-1.5a1.575 1.575 0 013.15 0v1.5m-3.15 0l.075 5.925m3.075.75V4.575m0 0a1.575 1.575 0 013.15 0V15M6.9 7.575a1.575 1.575 0 10-3.15 0v8.175a6.75 6.75 0 006.75 6.75h2.018a5.25 5.25 0 003.712-1.538l1.732-1.732a5.25 5.25 0 001.538-3.712l.003-2.024a.668.668 0 01.198-.471 1.575 1.575 0 10-2.228-2.228 3.818 3.818 0 00-1.12 2.687M6.9 7.575V12m6.27 4.318A4.49 4.49 0 0116.35 15m.002 0h-.002"
+                          />
                         </svg>
                       </div>
                       <div
                         className={`absolute top-0 -ml-10 text-center mt-16 w-32 text-xs font-medium uppercase ${
                           ['blocksheet'].includes(onStep)
-                            ? 'text-teal-600'
+                            ? 'text-[#5671fc] '
                             : 'text-gray-500'
                         }`}
                       >
@@ -563,14 +586,14 @@ const CostBreakUpSheet = ({
               </div>
 
               {['costsheet', 'allsheets'].includes(onStep) && (
-                <div className="mt-6 p-2">
-                  <section className="">
+                <div className="mt-10">
+                  <section className="bg-[#F6F7FE]">
                     {/* <p className="text-md font-extrabold tracking-tight uppercase font-body pb-4">
                       COST SHEET
                     </p> */}
-                    <div className=" border-gray-800 flex flex-row justify-between">
+                    <div className=" border-gray-800 flex flex-row justify-between bg-[#F6F7FE]">
                       <ul
-                        className="flex justify-  rounded-t-lg border-b"
+                        className="flex justify-  rounded-t-lg  ml-2"
                         id="myTab"
                         data-tabs-toggle="#myTabContent"
                         role="tablist"
@@ -583,11 +606,15 @@ const CostBreakUpSheet = ({
                           },
                         ].map((d, i) => {
                           return (
-                            <li key={i} className="mr-2" role="presentation">
+                            <li
+                              key={i}
+                              className="mr-2 font-bodyLato"
+                              role="presentation"
+                            >
                               <button
-                                className={`inline-block py-3 px-4 text-sm font-medium text-center rounded-t-lg border-b-2  hover:text-blue hover:border-gray-300   ${
+                                className={`inline-block py-3 mr-4 text-sm font-medium text-center rounded-t-lg border-b-2  hover:text-blue hover:border-gray-300   ${
                                   csMode === d.val
-                                    ? 'border-black border-b-3'
+                                    ? 'border-[#1B97F2] border-b-3'
                                     : 'border-transparent'
                                 }`}
                                 type="button"
@@ -602,7 +629,32 @@ const CostBreakUpSheet = ({
                           )
                         })}
                       </ul>
-                      <section>Show Gst</section>
+                      <section className="bg-[#F6F7FE]">
+                        <div className="w-full flex items-center ">
+                          <label
+                            htmlFor="area"
+                            className="label font-regular text-sm font-bodyLato"
+                          >
+                            Show Gst
+                          </label>
+                          <Field
+                            name="isGSTChecked"
+                            type="checkbox"
+                            component={() => (
+                              <Checkbox
+                                color="primary"
+                                // checked={formik.values.isGSTChecked}
+                                // onChange={() =>
+                                //   formik.setFieldValue(
+                                //     'isGSTChecked',
+                                //     !formik.values.isGSTChecked
+                                //   )
+                                // }
+                              />
+                            )}
+                          />
+                        </div>
+                      </section>
                     </div>
                   </section>
                   <div className="flex flex-col mx-0 bg-[#F8FAFC] ">
@@ -667,18 +719,18 @@ const CostBreakUpSheet = ({
                                   bg-teal-100
                                   text-teal-700
                                   border duration-200 ease-in-out
-                                  border-teal-600 transition"
+                                  border-[#5671fc] transition"
                                 >
                                   {' '}
                                   Download{' '}
                                 </button>
 
                                 <button
-                                  className="mb-2 md:mb-0  hover:scale-110 focus:outline-none              hover:bg-teal-600
-                                  bg-teal-600
+                                  className="mb-2 md:mb-0  hover:scale-110 focus:outline-none              hover:bg-[#5671fc]
+                                  bg-[#5671fc]
                                   text-teal-100
                                   border duration-200 ease-in-out
-                                  border-teal-600 transition
+                                  border-[#5671fc] transition
                                    px-5 py-2 text-sm shadow-sm font-medium tracking-wider text-white rounded-sm hover:shadow-lg hover:bg-green-500"
                                   type="submit"
                                   disabled={loading}
@@ -697,7 +749,7 @@ const CostBreakUpSheet = ({
                 </div>
               )}
               {/* PaymentScheduleSheet */}
-              {['payment_sch', 'allsheets'].includes(onStep) && (
+              {/* {['payment_sch', 'allsheets'].includes(onStep) && (
                 <PaymentScheduleSheet
                   title="Booking Form"
                   leadDetailsObj2={leadDetailsObj1}
@@ -705,7 +757,7 @@ const CostBreakUpSheet = ({
                   phase={selPhaseObj}
                   soldPrice={soldPrice}
                 />
-              )}
+              )} */}
               {['customerDetails', 'allsheets'].includes(onStep) && (
                 <AddBookingForm
                   title="Booking Form"

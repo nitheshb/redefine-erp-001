@@ -1,26 +1,27 @@
-import { Dialog } from '@headlessui/react'
 import { useState } from 'react'
-import { Form, Formik, Field } from 'formik'
-import * as Yup from 'yup'
-import { useSnackbar } from 'notistack'
-import { useParams } from '@redwoodjs/router'
+
+import { Dialog } from '@headlessui/react'
+import { Add, Remove } from '@mui/icons-material'
 import {
   InputAdornment,
   TextField as MuiTextField,
   Checkbox,
 } from '@mui/material'
-import { Add, Remove } from '@mui/icons-material'
 import { format, isDate, parse } from 'date-fns'
-import Loader from 'src/components/Loader/Loader'
-import { TextField } from 'src/util/formFields/TextField'
-import { DateField } from 'src/util/formFields/DateField'
-import { CustomSelect } from 'src/util/formFields/selectBoxField'
-import { unitsCancellation } from 'src/constants/projects'
-import { AreaConverter } from 'src/components/AreaConverter'
+import { Form, Formik, Field } from 'formik'
+import { useSnackbar } from 'notistack'
+import * as Yup from 'yup'
 
+import { useParams } from '@redwoodjs/router'
+
+import { AreaConverter } from 'src/components/AreaConverter'
+import Loader from 'src/components/Loader/Loader'
+import { unitsCancellation } from 'src/constants/projects'
 import { createPhase, updatePhase } from 'src/context/dbQueryFirebase'
 import { useAuth } from 'src/context/firebase-auth-context'
-
+import { DateField } from 'src/util/formFields/DateField'
+import { CustomSelect } from 'src/util/formFields/selectBoxField'
+import { TextField } from 'src/util/formFields/TextField'
 
 const AddPhaseForm = ({ title, dialogOpen, phase }) => {
   const { user } = useAuth()

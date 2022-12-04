@@ -1,12 +1,13 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react'
+
 import { ErrorMessage, useField } from 'formik'
 // import { InputField, Label } from '@redwoodjs/forms'
 
 export const TextField2 = ({ label, ...props }) => {
   const [field, meta] = useField(props)
   return (
-    <div className="relative z-0">
+    <div className="relative z-0 text-sm">
       <input
         type="text"
         name="name"

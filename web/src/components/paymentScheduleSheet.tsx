@@ -1,35 +1,18 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import { Dialog } from '@headlessui/react'
 import { useState, useEffect, createRef } from 'react'
-import { RadioGroup } from '@headlessui/react'
-import { Label, InputField, TextAreaField, FieldError } from '@redwoodjs/forms'
-import Select from 'react-select'
-import { Form, Formik, Field } from 'formik'
+
+import { Form, Formik } from 'formik'
 import { useSnackbar } from 'notistack'
 import * as Yup from 'yup'
-import NumberFormat from 'react-number-format'
 
-import { TextField } from 'src/util/formFields/TextField'
-import { CustomSelect } from 'src/util/formFields/selectBoxField'
-import Loader from './Loader/Loader'
-import { PhoneNoField } from 'src/util/formFields/phNoField'
 import {
-  addLeadScheduler,
   updateLeadCustomerDetailsTo,
-  checkIfLeadAlreadyExists,
   getAllProjects,
   steamUsersListByRole,
 } from 'src/context/dbQueryFirebase'
 import { useAuth } from 'src/context/firebase-auth-context'
-import { Timestamp } from 'firebase/firestore'
-import { useRouterStateSetter } from '@redwoodjs/router/dist/router-context'
-import {
-  sendWhatAppMediaSms,
-  sendWhatAppTextSms,
-} from 'src/util/axiosWhatAppApi'
-import { TextField2 } from 'src/util/formFields/TextField2'
 import { TextFieldFlat } from 'src/util/formFields/TextFieldFlatType'
 
 const PaymentScheduleSheet = ({
@@ -336,10 +319,10 @@ const PaymentScheduleSheet = ({
   return (
     <>
       <div className="">
-        <div className="px-4 sm:px-6  z-10"></div>
+        <div className=" z-10"></div>
 
         <div className="grid gap-8 grid-cols-1">
-          <div className="flex flex-col rounded-lg bg-white m-4">
+          <div className="flex flex-col rounded-lg bg-white mt-10">
             <div className="mt-0">
               <Formik
                 enableReinitialize={true}
@@ -354,14 +337,15 @@ const PaymentScheduleSheet = ({
                     <div className="form">
                       {/* Phase Details */}
 
-                      <section className=" py-1 bg-blueGray-50">
-                        <div className="w-full px-4 mx-auto ">
-                          <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-[#F9FBFB] border-0">
-                            <div className="rounded-t bg-[#F1F5F9] mb-0 px-6 py-6">
+                      <section className=" bg-blueGray-50">
+                        <div className="w-full  mx-auto ">
+                          <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-[#F6F7FE] border-0">
+                            <div className="rounded-t bg-[#F6F7FE] mb-0 px-3 py-2">
                               <div className="text-center flex justify-between">
-                                <p className="text-md font-extrabold tracking-tight uppercase font-body">
+                                <p className="text-sm font-extrabold tracking-tight uppercase font-body mt-2">
                                   Payment Schedule
                                 </p>
+
                                 {/* <button
                                   className="bg-pink-500 text-white active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150"
                                   type="button"
@@ -394,8 +378,8 @@ const PaymentScheduleSheet = ({
                                 </div>
                               </div>
                             </div>
-                            <div className="flex flex-col mx-0 bg-[#F1F5F9] ">
-                              <div className="px-9 py-10">
+                            <div className="flex flex-col mx-0 bg-[#F6F7FE] ">
+                              <div className="px-2 py-2">
                                 <Formik
                                   enableReinitialize={true}
                                   initialValues={initialState}

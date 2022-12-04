@@ -3,7 +3,11 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { Fragment, useEffect, useState } from 'react'
+
 import { Menu } from '@headlessui/react'
+import { Listbox, Transition } from '@headlessui/react'
+import { ArrowRightIcon } from '@heroicons/react/outline'
+import CalendarIcon from '@heroicons/react/outline/CalendarIcon'
 import {
   BadgeCheckIcon,
   DocumentIcon,
@@ -12,21 +16,25 @@ import {
   ViewGridIcon,
   XIcon,
 } from '@heroicons/react/solid'
-import { v4 as uuidv4 } from 'uuid'
-import { ArrowRightIcon } from '@heroicons/react/outline'
-import { CustomSelect } from 'src/util/formFields/selectBoxField'
-import SortComp from './sortComp'
-import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, SelectorIcon, DownloadIcon } from '@heroicons/react/solid'
-import { useAuth } from 'src/context/firebase-auth-context'
+import ClockIcon from '@heroicons/react/solid/ClockIcon'
+import PlusCircleIcon from '@heroicons/react/solid/PlusCircleIcon'
+import { VerticalAlignBottom } from '@mui/icons-material'
+import { DateTimePicker } from '@mui/lab'
+import DesktopDatePicker from '@mui/lab/DesktopDatePicker'
+import TimePicker from '@mui/lab/TimePicker'
+import { TextField } from '@mui/material'
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
-import { storage } from 'src/context/firebaseConfig'
+import DatePicker from 'react-datepicker'
+import { useDropzone } from 'react-dropzone'
 import toast from 'react-hot-toast'
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   addLeadScheduler,
   addSchedulerLog,
-
   deleteSchLog,
   steamLeadActivityLog,
   steamLeadPhoneLog,
@@ -43,10 +51,8 @@ import {
   getAllProjects,
   updateLeadProject,
 } from 'src/context/dbQueryFirebase'
-import { useDropzone } from 'react-dropzone'
-import PlusCircleIcon from '@heroicons/react/solid/PlusCircleIcon'
-import ClockIcon from '@heroicons/react/solid/ClockIcon'
-import CalendarIcon from '@heroicons/react/outline/CalendarIcon'
+import { useAuth } from 'src/context/firebase-auth-context'
+import { storage } from 'src/context/firebaseConfig'
 import {
   getDifferenceInHours,
   getDifferenceInMinutes,
@@ -54,23 +60,20 @@ import {
   prettyDateTime,
   timeConv,
 } from 'src/util/dateConverter'
-import { LocalizationProvider } from '@mui/x-date-pickers'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { DateTimePicker } from '@mui/lab'
-import DesktopDatePicker from '@mui/lab/DesktopDatePicker'
-import { TextField } from '@mui/material'
-import TimePicker from '@mui/lab/TimePicker'
-import DatePicker from 'react-datepicker'
+import { CustomSelect } from 'src/util/formFields/selectBoxField'
+
+import SortComp from './sortComp'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import { setHours, setMinutes } from 'date-fns'
 import { Timestamp } from 'firebase/firestore'
+
 import StatusDropComp from './statusDropComp'
 import AssigedToDropComp from './assignedToDropComp'
 import Loader from './Loader/Loader'
-import { VerticalAlignBottom } from '@mui/icons-material'
 import ProjPhaseHome from './ProjPhaseHome/ProjPhaseHome'
 import AddBookingForm from './bookingForm'
+
 import { useSnackbar } from 'notistack'
 
 // interface iToastInfo {
@@ -132,6 +135,7 @@ export default function TransactionUpdateSideView({
   unitViewerrr,
   unitsViewMode,
   setUnitsViewMode,
+  transactionData,
 }) {
   console.log('customer Details', customerDetails)
   const { user } = useAuth()
@@ -200,7 +204,7 @@ export default function TransactionUpdateSideView({
     AssignedBy,
     Notes,
     Timeline,
-    documents,
+    attachments,
     mode,
     chequeno,
     dated,
@@ -257,7 +261,7 @@ export default function TransactionUpdateSideView({
       fet = 'notes'
     } else if (selFeature === 'phone') {
       fet = 'ph'
-    } else if (selFeature === 'documents') {
+    } else if (selFeature === 'attachments') {
       fet = 'attach'
     } else if (selFeature === 'appointments') {
       fet = 'appoint'
@@ -537,7 +541,6 @@ export default function TransactionUpdateSideView({
     console.log('new one ', schStsA)
     await addLeadScheduler(orgId, id, data, schStsA, '')
     if (Status != tempLeadStatus) {
-
     }
     await setTakTitle('')
     await setAddSch(false)
@@ -641,12 +644,11 @@ export default function TransactionUpdateSideView({
     <div
       className={`bg-white   h-screen    ${openUserProfile ? 'hidden' : ''} `}
     >
-      <div className="">
-        <div className="p-3 flex justify-between">
-          <span className="text-md mt-1 font-semibold text-xl mr-auto ml-1 text-[#053219] tracking-wide">
+      <div className="rounded-t bg-[#F1F5F9] mb-0 px-3 py-2">
+        <div className="text-center flex justify-between">
+          <p className="text-xs font-extrabold tracking-tight uppercase font-body my-[2px] p-1 ml-2">
             Transaction
-          </span>
-          {/* <XIcon className="w-5 h-5 mt-[2px]" /> */}
+          </p>
         </div>
       </div>
       <div className="py-3 px-3 m-4 mt-2 rounded-lg border border-gray-100 h-screen overflow-y-auto">
@@ -673,153 +675,100 @@ export default function TransactionUpdateSideView({
             </span>
           </div>
         </div>
-        <div className="p-3 grid grid-cols-4">
-          <section>
-            <div className="font-md text-xs text-gray-500 mb-[2] tracking-wide">
-              Type
-            </div>
-            <div className="font-semibold text-sm  mt  text-slate-900 tracking-wide overflow-ellipsis overflow-hidden">
-              {mode}
-            </div>
-            <div className="font-md text-xs text-gray-500 mb-[2] mt-3 tracking-wide">
-              Cheque no
-            </div>
-            <div className="font-semibold text-sm  mt text-slate-900 tracking-wide overflow-ellipsis overflow-hidden">
-              {chequeno}
-            </div>
-          </section>
-          <section>
-            <div className="font-md text-xs text-gray-500 mb-[2] tracking-wide">
-              Dated
-            </div>
-            <div className="font-semibold text-sm  mt  text-slate-900 tracking-wide overflow-ellipsis overflow-hidden">
-              {dated}
-            </div>
-            <div className="font-md text-xs text-gray-500 mb-[2] mt-3 tracking-wide">
+        <section className="flex flex-col bg-[#F6F7FF] p-3 border border-[#e5e7f8] rounded-md ">
+          <section className="flex flow-row justify-between mb-1">
+            <div className="font-md text-xs text-gray-500  tracking-wide">
               Amount
             </div>
-            <div className="font-semibold text-sm  mt text-slate-900 tracking-wide overflow-ellipsis overflow-hidden">
-              Rs {amount}
+            <div className="font-md text-xs tracking-wide font-semibold text-slate-900 ">
+              Rs 1,20,000
             </div>
           </section>
-
-          <section className="ml-8">
-            <div className="font-md text-xs text-gray-500 mb-[2] tracking-wide">
-              To Account
-            </div>
-            <div className="font-semibold text-sm text-slate-900">
-              {Mobile?.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3')}
+        </section>
+        <div className="mt-2  grid grid-cols-2">
+          <section className="mr-2 flex flex-col bg-[#F6F7FF] p-3 border border-[#e5e7f8] rounded-md ">
+            <section className="flex flex-row justify-between mb-1">
+              <div className="font-md text-xs text-gray-500  tracking-wide">
+                From
+              </div>
+              <div className="font-md text-xs tracking-wide font-semibold text-slate-900 ">
+                Imps
+              </div>
+            </section>
+            <div className="font-md text-xs tracking-wide font-semibold text-slate-900 ">
+              data
             </div>
           </section>
-          <section className="flex flex-col ml-[54px]">
-            <div className="font-md text-xs  text-gray-500 mb-[2] flow-right tracking-wide">
-              From
-            </div>
-            <div className="font-lg text-sm text-slate-900 tracking-wide overflow-ellipsis overflow-hidden">
-              <span className="overflow-ellipsis">{Email}</span>
+          <section className="flex flex-col bg-[#F6F7FF] p-3 border border-[#e5e7f8] rounded-md ">
+            <section className="flex flex-row  justify-between mb-1">
+              <div className="font-md text-xs text-gray-500  tracking-wide">
+                To
+              </div>
+              <div className="font-md text-xs tracking-wide font-semibold text-slate-900 ">
+                date
+              </div>
+            </section>
+            <div className="font-md text-xs tracking-wide font-semibold text-slate-900 ">
+              data
             </div>
           </section>
         </div>
-
-        <div className=" mt-2 pb-8">
-          <div className="px-3 mb-4 grid grid-cols-4 gap-20 ">
-            <div className="font-lg text-sm text-slate-900 min-w-[33%]">
-              <div className="font-md text-xs mt-2 text-gray-500 mb-[1] tracking-wide">
-                Assigned To
+        <div className="my-2  grid grid-cols-2 ">
+          <section className="mr-2 flex flex-col bg-[#F6F7FF] p-3 border border-[#e5e7f8] rounded-md ">
+            <section className="flex flex-row justify-between mb-1">
+              <div className="font-md text-xs text-gray-500  tracking-wide">
+                Date
               </div>
-              <AssigedToDropComp
-                assignerName={assignerName}
-                id={id}
-                setAssigner={setAssigner}
-                usersList={usersList}
-              />
-              {/* <CustomSelect
-                name="roleName"
-                label=""
-                className="input mt-1 border-0"
-                onChange={(value) => {
-                  formik.setFieldValue('myRole', value.value)
-                  console.log('i was changed', value, usersList)
-                  setAssigner(id, value)
-                }}
-                value={assignedTo}
-                options={usersList}
-              /> */}
-            </div>
-
-            <div className="font-lg text-sm text-slate-900 min-w-[33%] ml-1">
-              <div className="font-md text-xs mt-2 text-gray-500 mb-[1] tracking-wide">
-                Status
-              </div>
-              <StatusDropComp
-                leadStatus={tempLeadStatus}
-                id={id}
-                setStatusFun={setStatusFun}
-              />
-              {/* <CustomSelect
-                name="roleName"
-                label=""
-                className="input mt-1"
-                onChange={(value) => {
-                  // formik.setFieldValue('myRole', value.value)
-                  console.log('i was changed', value)
-                  setStatusFun(id, value.value)
-                }}
-                value={leadStatus}
-                options={statuslist}
-              /> */}
-            </div>
-            {/* <section className="min-w-[33%]"> */}
-            {/* <div className="font-md text-xs text-gray-500 mb-[2]">
-                Project
-              </div>
-              <div className="font-semibold text-sm text-slate-900">
-                {Project}
+              <div className="font-md text-xs tracking-wide font-semibold text-slate-900 ">
+                31/11/2022
               </div>
             </section>
-            <section className="min-w-[33%]">
-              <div className="font-md text-xs text-gray-500 mb-[2]">
-                Project
+            <section className="flex flex-row justify-between mb-1">
+              <div className="font-md text-xs text-gray-500  tracking-wide">
+                Ref No
               </div>
-              <div className="font-semibold text-sm text-slate-900">
-                {Project}
+              <div className="font-md text-xs tracking-wide font-semibold text-slate-900 ">
+                00022344x45
               </div>
-            </section> */}
-            <section className="min-w-[93%] max-w-[93%] mt-[9px]">
-              <div
-                className="flex flex-row justify-between cursor-pointer"
-                onClick={() => setUnitsViewMode(!unitsViewMode)}
-              >
-                <div className="font-md text-xs text-gray-500 mb-[2] tracking-wide">
-                  Project {}
-                </div>
-                {selProjectIs?.uid?.length > 4 &&
-                  (unitsViewMode ? (
-                    <XIcon
-                      className="h-4 w-4 mr-1 mb-[2px] inline text-blue-600"
-                      aria-hidden="true"
-                    />
-                  ) : (
-                    <ViewGridIcon
-                      className="h-4 w-4 mr-1 mb-[2px] inline text-blue-600"
-                      aria-hidden="true"
-                    />
-                  ))}
+            </section>
+            <section className="flex flex-row  justify-between mb-1">
+              <div className="font-md text-xs text-gray-500  tracking-wide">
+                By
               </div>
-              <div className="font-semibold text-sm text-slate-900 tracking-wide overflow-ellipsis">
-                {/* {Project} */}
-                {/* projectList */}
+              <div className="font-md text-xs tracking-wide font-semibold text-slate-900 ">
+                date
+              </div>
+            </section>
+          </section>
+          <section className="flex flex-col bg-[#F6F7FF] p-3 border border-[#e5e7f8] rounded-md ">
+            <section className="flex flex-row justify-between mb-1">
+              <div className="font-md text-xs text-gray-500  tracking-wide">
+                Owner
+              </div>
+              <div className="font-md text-xs tracking-wide font-semibold text-slate-900 ">
                 <AssigedToDropComp
-                  assignerName={selProjectIs?.projectName || Project}
+                  assignerName={assignerName}
                   id={id}
-                  align="right"
-                  setAssigner={setNewProject}
-                  usersList={projectList}
+                  setAssigner={setAssigner}
+                  usersList={usersList}
                 />
               </div>
             </section>
-          </div>
+            <section className="flex flex-row  justify-between mb-1">
+              <div className="font-md text-xs text-gray-500  tracking-wide">
+                Status
+              </div>
+              <div className="font-md text-xs tracking-wide font-semibold text-slate-900 ">
+                <StatusDropComp
+                  leadStatus={tempLeadStatus}
+                  id={id}
+                  setStatusFun={setStatusFun}
+                />
+              </div>
+            </section>
+          </section>
         </div>
+
         {/* <div className="border-b mt-3">
           <div className="py-2 px-1">
             <div className="px-3  font-md font-medium text-sm mb-3  text-gray-800">
@@ -890,9 +839,9 @@ export default function TransactionUpdateSideView({
                           Notes
                         </div> */}
 
-                <div className=" border-gray-200 ">
+                <div className=" border-gray-900 bg-[#F6F7FF] rounded-t-lg ">
                   <ul
-                    className="flex   bg-black rounded-t-lg"
+                    className="flex   rounded-t-lg"
                     id="myTab"
                     data-tabs-toggle="#myTabContent"
                     role="tablist"
@@ -901,16 +850,20 @@ export default function TransactionUpdateSideView({
                       // { lab: 'Schedules', val: 'appointments' },
                       // { lab: 'Tasks', val: 'tasks' },
                       { lab: 'Notes', val: 'notes' },
-                      { lab: 'Documents', val: 'documents' },
+                      { lab: 'Attachments', val: 'attachments' },
                       // { lab: 'Phone', val: 'phone' },
-                      { lab: 'Lead Logs', val: 'timeline' },
+                      { lab: 'Timeline', val: 'timeline' },
                     ].map((d, i) => {
                       return (
-                        <li key={i} className="mr-2" role="presentation">
+                        <li
+                          key={i}
+                          className="mr-2 ml-2 text-sm font-bodyLato"
+                          role="presentation"
+                        >
                           <button
-                            className={`inline-block py-3 px-4 text-sm font-medium text-center text-white rounded-t-lg border-b-2  hover:text-white hover:border-gray-300   ${
+                            className={`inline-block py-3 mr-3 px-1 text-sm font-medium text-center text-black rounded-t-lg border-b-2  hover:text-black hover:border-gray-300   ${
                               selFeature === d.val
-                                ? 'border-white text-white'
+                                ? 'border-black text-black'
                                 : 'border-transparent'
                             }`}
                             type="button"
@@ -928,23 +881,26 @@ export default function TransactionUpdateSideView({
                 </div>
 
                 {selFeature === 'notes' && (
-                  <div className="flex flex-col justify-between border pt-6">
+                  <div className="flex flex-col justify-between  pt-6 bg-[#F6F7FF]">
                     {leadNotesFetchedData.length === 0 && !addNote && (
                       <div className="py-8 px-8 flex flex-col items-center mt-5">
                         <div className="font-md font-medium text-xs mb-4 text-gray-800 items-center">
                           <img
-                            className="w-[180px] h-[180px] inline"
+                            className="w-[90px] h-[90px] inline"
                             alt=""
                             src="/note-widget.svg"
                           />
                         </div>
-                        <h3 className="mb-1 text-sm font-semibold text-gray-900 ">
+                        <h3 className="mb-1 text-xs font-semibold text-gray-900 ">
                           No Helpful Notes {addNote}
                         </h3>
                         <button onClick={() => selFun()}>
-                          <time className="block mb-2 text-sm font-normal leading-none text-gray-400 ">
+                          <time className="block mb-2 text-xs font-normal leading-none text-gray-400 ">
                             Better always attach a string
-                            <span className="text-blue-600"> Add Notes</span>
+                            <span className="text-blue-600 text-xs">
+                              {' '}
+                              Add Notes
+                            </span>
                           </time>
                         </button>
                       </div>
@@ -1054,24 +1010,27 @@ export default function TransactionUpdateSideView({
                 )}
               </div>
             </div>
-            {selFeature === 'documents' && (
-              <div className="border px-4">
+            {selFeature === 'attachments' && (
+              <div className="border px-4 bg-[#F6F7FF]">
                 {docsList.length === 0 && (
                   <div className="py-8 px-8 flex flex-col items-center mt-6">
                     <div className="font-md font-medium text-xs mb-4 text-gray-800 items-center">
                       <img
-                        className="w-[200px] h-[200px] inline"
+                        className="w-[80px] h-[80px] inline"
                         alt=""
                         src="/empty-dashboard.svg"
                       />
                     </div>
-                    <h3 className="mb-1 text-sm font-semibold text-gray-900 ">
+                    <h3 className="mb-1 text-xs font-semibold text-gray-900 ">
                       No Attachments
                     </h3>
                     <button onClick={() => showAddAttachF()}>
-                      <time className="block mb-2 text-sm font-normal leading-none text-gray-400 ">
+                      <time className="block mb-2 text-xs font-normal leading-none text-gray-400 ">
                         Better always attach a string
-                        <span className="text-blue-600"> Add Dcoument</span>
+                        <span className="text-blue-600 text-xs">
+                          {' '}
+                          Add Dcoument
+                        </span>
                       </time>
                     </button>
                   </div>
@@ -1146,7 +1105,7 @@ export default function TransactionUpdateSideView({
                   <div className="py-8">
                     <div className="flex justify-between">
                       <h2 className="text-xl font-semibold leading-tight">
-                        Customer Documents
+                        Customer attachments
                       </h2>
                       <button onClick={() => showAddAttachF()}>
                         <time className="block mb-2 text-sm font-normal leading-none text-gray-400 ">
@@ -1243,92 +1202,22 @@ export default function TransactionUpdateSideView({
                 </time>
               </div>
             )}
-            {selFeature === 'phone' && (
-              <>
-                {filterData.length === 0 && (
-                  <div className="py-8 px-8 flex flex-col items-center">
-                    <div className="font-md font-medium text-xs mb-4 text-gray-800 items-center">
-                      <img
-                        className="w-[200px] h-[200px] inline"
-                        alt=""
-                        src="/all-complete.svg"
-                      />
-                    </div>
-                    <h3 className="mb-1 text-sm font-semibold text-gray-900 ">
-                      You are clean
-                    </h3>
-                    <time className="block mb-2 text-sm font-normal leading-none text-gray-400 ">
-                      Sitback & Relax{' '}
-                      <span className="text-blue-600">Add Task</span>
-                    </time>
-                  </div>
-                )}
-
-                <div className="px-4 mt-4">
-                  <div className="font-md font-medium text-xl mb-4 text-[#053219]">
-                    Phone Calls
-                  </div>
-                  <ol className="relative border-l border-gray-200 ml-3 ">
-                    {filterData.map((data, i) => (
-                      <section key={i} className="">
-                        <span className="flex absolute -left-3 justify-center items-center w-6 h-6 bg-green-200 rounded-full ring-8 ring-white  ">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-3 w-3 text-blue-600 "
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                          >
-                            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                          </svg>
-                        </span>
-                        <div className="text-gray-600  m-3 ml-6">
-                          <div className="text-base font-normal">
-                            <span className="font-medium text-green-900 ">
-                              {'Rajiv'}
-                            </span>{' '}
-                            called{' '}
-                            <span className="text-sm text-red-900  ">
-                              {Name}
-                            </span>{' '}
-                          </div>
-                          <div className="text-sm font-normal">{data?.txt}</div>
-                          <span className="inline-flex items-center text-xs font-normal text-gray-500 ">
-                            <ClockIcon className="mr-1 w-3 h-3" />
-                            {data?.type == 'ph'
-                              ? timeConv(Number(data?.time)).toLocaleString()
-                              : timeConv(data?.T).toLocaleString()}
-                            {'    '}
-                            <span className="text-red-900 ml-4 mr-4">
-                              {Number(data?.duration)} sec
-                            </span>
-                            or
-                            <span className="text-red-900 ml-4">
-                              {parseInt(data?.duration / 60)} min
-                            </span>
-                          </span>
-                        </div>
-                      </section>
-                    ))}
-                  </ol>
-                </div>
-              </>
-            )}
 
             {selFeature === 'timeline' && (
-              <div className="py-8 px-8  border">
+              <div className="py-8 px-8  border bg-[#F6F7FF]">
                 {filterData.length == 0 && (
                   <div className="py-8 px-8 flex flex-col items-center">
                     <div className="font-md font-medium text-xs mb-4 text-gray-800 items-center">
                       <img
-                        className="w-[200px] h-[200px] inline"
+                        className="w-[80px] h-[80px] inline"
                         alt=""
                         src="/templates.svg"
                       />
                     </div>
-                    <h3 className="mb-1 text-sm font-semibold text-gray-900 ">
+                    <h3 className="mb-1 text-xs font-semibold text-gray-900 ">
                       Timeline is Empty
                     </h3>
-                    <time className="block mb-2 text-sm font-normal leading-none text-gray-400 ">
+                    <time className="block mb-2 text-xs font-normal leading-none text-gray-400 ">
                       This scenario is very rare to view
                     </time>
                   </div>

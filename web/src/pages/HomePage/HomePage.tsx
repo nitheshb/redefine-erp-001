@@ -359,7 +359,7 @@ const HomePage = () => {
 
             <div className="flex items-start flex-row">
               {' '}
-              <div >
+              <div>
                 <HeadSideBarDetailView
                   pgName={'leadsManager'}
                   sourceLink={'projectsScreen'}
@@ -368,7 +368,6 @@ const HomePage = () => {
                   viewable={viewable}
                 />
               </div>
-
             </div>
 
             <div className="flex-grow mx-6  mt-10 items-center overflow-y-auto  h-[98%]  px-300  pt-300">
@@ -890,12 +889,14 @@ const HomePage = () => {
                             setOpen={handleNewProjectClose}
                             title="Create Project"
                             data={{}}
+                            widthClass="max-w-2xl"
                           />
                           <SiderForm
                             open={isEditProjectOpen}
                             setOpen={handleEditProjectClose}
                             title="Edit Project"
                             data={project}
+                            widthClass="max-w-2xl"
                           />
                         </div>
                       </div>

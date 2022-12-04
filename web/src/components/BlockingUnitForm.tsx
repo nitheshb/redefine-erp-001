@@ -1,19 +1,12 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import { Dialog } from '@headlessui/react'
 import { useState, useEffect } from 'react'
-import { RadioGroup } from '@headlessui/react'
-import { Label, InputField, TextAreaField, FieldError } from '@redwoodjs/forms'
-import Select from 'react-select'
+
+import { Timestamp } from 'firebase/firestore'
 import { ErrorMessage, Form, Formik } from 'formik'
 import * as Yup from 'yup'
-import NumberFormat from 'react-number-format'
 
-import { TextField } from 'src/util/formFields/TextField'
-import { CustomSelect } from 'src/util/formFields/selectBoxField'
-import Loader from './Loader/Loader'
-import { PhoneNoField } from 'src/util/formFields/phNoField'
 import {
   addLead,
   checkIfLeadAlreadyExists,
@@ -21,13 +14,10 @@ import {
   steamUsersListByRole,
 } from 'src/context/dbQueryFirebase'
 import { useAuth } from 'src/context/firebase-auth-context'
-import { Timestamp } from 'firebase/firestore'
-import { useRouterStateSetter } from '@redwoodjs/router/dist/router-context'
 import {
   sendWhatAppMediaSms,
   sendWhatAppTextSms,
 } from 'src/util/axiosWhatAppApi'
-import { TextField2 } from 'src/util/formFields/TextField2'
 
 const BlockingUnitForm = ({ title, dialogOpen }) => {
   const { user } = useAuth()
@@ -232,7 +222,6 @@ const BlockingUnitForm = ({ title, dialogOpen }) => {
     }
   }
 
-
   const initialState = {
     blockReason: '',
   }
@@ -245,23 +234,17 @@ const BlockingUnitForm = ({ title, dialogOpen }) => {
   }
   return (
     <>
-      <section className=" px-4 sm:px-6  z-10 py-1 bg-blueGray-50 flex flex-col rounded-lg bg-white m-4 grid gap-8 grid-cols-1">
+      <section className="bg-blueGray-50  mt-10">
         <div className="w-full  mx-auto ">
-          <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-100 border-0 ">
-            <div className="rounded-t bg-[#F1F5F9] mb-0 px-6 py-6">
+          <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-[#F9FBFB] border-0 ">
+            <div className="rounded-t bg-[#F1F5F9] mb-0 px-3 py-2">
               <div className="text-center flex justify-between">
-                <p className="text-md font-extrabold tracking-tight uppercase font-body">
-                  Block unit
+                <p className="text-xs font-extrabold tracking-tight uppercase font-body my-1">
+                  Block Unit
                 </p>
-                <button
-                  className="bg-pink-500 text-white active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150"
-                  type="button"
-                >
-                  Receipt Download
-                </button>
               </div>
             </div>
-            <div className="mx-10 o mt-10 ">
+            <div className="mx-2 o my-10 mt-4 ">
               <div className="bg-white p-10 rounded-xl">
                 <h1 className="text-center text-xl font-semibold text-gray-500">
                   How many days you want to block?
@@ -274,8 +257,8 @@ const BlockingUnitForm = ({ title, dialogOpen }) => {
                       onMouseEnter={() => setSelDays(days)}
                       onClick={() => setSelDays(days)}
                       className={`${
-                        days === selDays ? 'bg-green-500 text-green-50 ' : ''
-                      } flex items-center justify-center w-10 h-10 bg-gray--100 text-gray-600 hover:bg-green-500 transition duration-150 rounded-full font-bold hover:text-green-50 cursor-pointer`}
+                        days === selDays ? 'bg-[#FFCD3E]  text-green-50 ' : ''
+                      } flex items-center justify-center w-10 h-10 bg-gray--100 text-gray-600 hover:bg-[#FFCD3E]  transition duration-150 rounded-full font-bold hover:text-green-50 cursor-pointer`}
                     >
                       {days}
                     </option>
@@ -305,13 +288,17 @@ const BlockingUnitForm = ({ title, dialogOpen }) => {
                         />
                         <button
                           type="submit"
-                          className="bg-green-500 text-green-50 font-semibold px-6 py-2 rounded-xl text-md"
+                          className="bg-[#FFCD3E]  text-green-50 font-semibold px-6 py-2 rounded-xl text-md"
                         >
                           Block
                         </button>
                       </div>
-                      <span className="text-center block mt-6 text-gray-400 text-xl font-semibold">
-                        Blocking unit for {selDays} days
+                      <span className="text-center block mt-6 text-gray-400 text-md font-semibold">
+                        Blocking unit for
+                        <span className="text-[#FFCD3E] ml-2 text-xl w-10 ">
+                          {selDays}
+                        </span>{' '}
+                        days
                       </span>
                     </Form>
                   )}
@@ -322,7 +309,7 @@ const BlockingUnitForm = ({ title, dialogOpen }) => {
             <span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-10 w-10 bg-green-50 rounded-full text-green-500 mb-10"
+                className="h-10 w-10 bg-green-50 rounded-full text-[#FFCD3E]  mb-10"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"

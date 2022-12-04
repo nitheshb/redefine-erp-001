@@ -246,6 +246,7 @@ const PlanDiagramView = ({
         widthClass={sliderInfo.widthClass}
         pId={pId}
         phaseDetails={data}
+
       />
     </>
   )

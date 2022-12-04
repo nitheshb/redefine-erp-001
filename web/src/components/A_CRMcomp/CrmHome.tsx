@@ -481,6 +481,8 @@ const CrmHome = ({ leadsTyper }) => {
         setOpen={setisImportLeadsOpen}
         title={addLeadsTypes}
         customerDetails={selUserProfile}
+        widthClass="max-w-4xl"
+
       />
     </>
   )

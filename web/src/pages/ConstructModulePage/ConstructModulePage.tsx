@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 
+import ConstructUnitsHome from 'src/components/ConstructModule/ConstructUnitsHome'
 import ExecutiveHomeViewerPage from 'src/components/ExecutiveHomeViewerPage'
 import HeadSideBarDetailView from 'src/components/HeadDetailSideBar'
 import HeadSideBar from 'src/components/HeadSideBar/HeadSideBar'
@@ -14,9 +15,8 @@ import { USER_ROLES } from 'src/constants/userRoles'
 import { useAuth } from 'src/context/firebase-auth-context'
 
 import HeadNavBar from '../../components/HeadNavBar/HeadNavBar'
-import LegalDocsHome from '../LegalDocsHome'
 
-const LegalHomePage = () => {
+const ConstructModulePage = () => {
   const { user } = useAuth()
 
   const [showSideBar, setShowSideBar] = useState(false)
@@ -59,13 +59,13 @@ const LegalHomePage = () => {
                   : 'flex flex-row overflow-auto   text-gray-700 '
               }`}
             >
-              <HeadSideBar pgName={'legalModule'} />
+              <HeadSideBar pgName={'constructModule'} />
               <div className="flex items-start flex-row">
                 <div>
                   <div>
                     <HeadSideBarDetailView
-                      pgName={'legalModule'}
-                      sourceLink={'legalModule'}
+                      pgName={'constructModule'}
+                      sourceLink={'constructModule'}
                       showSideBar={showSideBar}
                       showSideView1={showSideView1}
                       setViewable={setViewable}
@@ -77,16 +77,22 @@ const LegalHomePage = () => {
             </div>
 
             <div className="flex-grow  items-center overflow-y-auto  px-300  py-300">
-              {viewable === 'legalDocuments' && (
-                <LegalDocsHome
+              {viewable === 'ConstructUnits' && (
+                <ConstructUnitsHome
                   project={{
                     projectName: 'Projects',
                   }}
                   isEdit={undefined}
                 />
               )}
-              {viewable === 'legalQueries' && (
+              {viewable === 'inProgress' && (
                 <ExecutiveHomeViewerPage leadsTyper={'inProgress'} />
+              )}
+              {viewable === 'booked' && (
+                <ExecutiveHomeViewerPage leadsTyper={'booked'} />
+              )}
+              {viewable === 'archieveLeads' && (
+                <ExecutiveHomeViewerPage leadsTyper={'archieveLeads'} />
               )}
               {viewable === 'Today1' && (
                 <TodayLeadsHomePage taskType={viewable} />
@@ -108,6 +114,7 @@ const LegalHomePage = () => {
                   isEdit={undefined}
                 />
               )}
+
               {viewable === 'LeadsManagerHome' && <LeadsManagementHome />}
               {viewable === 'Team Lead Report' && (
                 <LeadsTeamReportBody
@@ -197,4 +204,4 @@ const LegalHomePage = () => {
   )
 }
 
-export default LegalHomePage
+export default ConstructModulePage

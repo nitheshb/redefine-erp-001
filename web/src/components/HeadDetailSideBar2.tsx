@@ -350,11 +350,11 @@ const HeadSideBarDetailView2 = ({
                   <span
                     className={
                       'flex items-center text-sm py-1  h-9  overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
-                      (viewable === 'MyCustomers'
+                      (viewable === 'crmSpace'
                         ? 'text-blue-600 text-md font-semibold '
                         : '')
                     }
-                    onClick={() => setViewable('MyCustomers')}
+                    onClick={() => setViewable('crmSpace')}
                   >
                     <span className="flex items-center">
                       <span style={{ color: '#692fc2' }}>
@@ -424,11 +424,11 @@ const HeadSideBarDetailView2 = ({
                   <span
                     className={
                       'flex items-center text-sm py-1  h-9  overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
-                      (viewable === 'TeamCustomers'
+                      (viewable === 'MyCustomers-II'
                         ? 'text-blue-600 text-md font-semibold '
                         : '')
                     }
-                    onClick={() => setViewable('TeamCustomers')}
+                    onClick={() => setViewable('MyCustomers-II')}
                   >
                     <span className="flex items-center">
                       <span style={{ color: '#692fc2' }}>
@@ -447,7 +447,44 @@ const HeadSideBarDetailView2 = ({
                           </g>
                         </svg>
                       </span>
-                      <span className="text-sm pl-1">Team Customers</span>
+                      <span className="text-sm pl-1">My Customers-II</span>
+                    </span>
+                    <span className="flex ml-auto items-bottom">
+                      <span
+                        // style={{ color: '#058527' }}
+                        className="flex ml-auto items-bottom text-xs mt-2"
+                      ></span>
+                    </span>
+                  </span>
+                </li>
+                <li className="relative">
+                  <span
+                    className={
+                      'flex items-center text-sm py-1  h-9  overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
+                      (viewable === 'MyCustomers-II'
+                        ? 'text-blue-600 text-md font-semibold '
+                        : '')
+                    }
+                    onClick={() => setViewable('MyCustomers-II')}
+                  >
+                    <span className="flex items-center">
+                      <span style={{ color: '#692fc2' }}>
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g fill="currentColor" fillRule="nonzero">
+                            <path
+                              d="M6 4.5h12A1.5 1.5 0 0119.5 6v2.5h-15V6A1.5 1.5 0 016 4.5z"
+                              opacity="0.1"
+                            ></path>
+                            <path d="M6 4h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2zm0 1a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V6a1 1 0 00-1-1H6zm10 12a1 1 0 110-2 1 1 0 010 2zm-4 0a1 1 0 110-2 1 1 0 010 2zm-4 0a1 1 0 110-2 1 1 0 010 2zm8-4a1 1 0 110-2 1 1 0 010 2zm-4 0a1 1 0 110-2 1 1 0 010 2zm-4 0a1 1 0 110-2 1 1 0 010 2zM7 8h10a.5.5 0 110 1H7a.5.5 0 010-1z"></path>
+                          </g>
+                        </svg>
+                      </span>
+                      <span className="text-sm pl-1">Loan Dept</span>
                     </span>
                     <span className="flex ml-auto items-bottom">
                       <span
@@ -514,7 +551,7 @@ const HeadSideBarDetailView2 = ({
                     </span>
                   </span>
                 </li>
-           
+
                 <li className="relative">
                   <span
                     className={

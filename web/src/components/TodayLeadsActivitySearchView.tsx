@@ -4,9 +4,18 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import * as React from 'react'
 import { Fragment, useState, useEffect } from 'react'
-import PropTypes from 'prop-types'
-import { alpha } from '@mui/material/styles'
+
+import { ConnectingAirportsOutlined } from '@mui/icons-material'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EventNoteTwoToneIcon from '@mui/icons-material/EventNoteTwoTone'
+import FileDownloadIcon from '@mui/icons-material/FileDownload'
 import Box from '@mui/material/Box'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import IconButton from '@mui/material/IconButton'
+import Paper from '@mui/material/Paper'
+import { alpha } from '@mui/material/styles'
+import Switch from '@mui/material/Switch'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
@@ -16,37 +25,30 @@ import TablePagination from '@mui/material/TablePagination'
 import TableRow from '@mui/material/TableRow'
 import TableSortLabel from '@mui/material/TableSortLabel'
 import Toolbar from '@mui/material/Toolbar'
-import Typography from '@mui/material/Typography'
-import Paper from '@mui/material/Paper'
-import Checkbox from '@mui/material/Checkbox'
-import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Switch from '@mui/material/Switch'
-import DeleteIcon from '@mui/icons-material/Delete'
-import FileDownloadIcon from '@mui/icons-material/FileDownload'
+import Typography from '@mui/material/Typography'
 import { visuallyHidden } from '@mui/utils'
+import PropTypes from 'prop-types'
 import Highlighter from 'react-highlight-words'
 
-import EventNoteTwoToneIcon from '@mui/icons-material/EventNoteTwoTone'
-import { ConnectingAirportsOutlined } from '@mui/icons-material'
-import CSVDownloader from 'src/util/csvDownload'
-import { H1 } from './Typography'
+import {
+  getAllProjects,
+  steamUsersListByRole,
+} from 'src/context/dbQueryFirebase'
 import { useAuth } from 'src/context/firebase-auth-context'
+import CSVDownloader from 'src/util/csvDownload'
 import {
   getDifferenceInDays,
   getDifferenceInHours,
   getDifferenceInMinutes,
 } from 'src/util/dateConverter'
-import SiderForm from './SiderForm/SiderForm'
-import Loader from './Loader/Loader'
-import TodoListView from './todoList'
 import { SlimSelectBox } from 'src/util/formFields/slimSelectBoxField'
-import {
-  getAllProjects,
-  steamUsersListByRole,
-} from 'src/context/dbQueryFirebase'
+
+import Loader from './Loader/Loader'
 import LogSkelton from './shimmerLoaders/logSkelton'
+import SiderForm from './SiderForm/SiderForm'
+import TodoListView from './todoList'
+import { H1 } from './Typography'
 
 const headCells = [
   {
@@ -1148,12 +1150,14 @@ export default function TodayLeadsActivitySearchView({
         setOpen={setisImportLeadsOpen}
         title={addLeadsTypes}
         customerDetails={selUserProfile}
+        widthClass="max-w-2xl"
       />
       <SiderForm
         open={isImportLeadsOpen1}
         setOpen={setisImportLeadsOpen1}
         title={'Add Task'}
         customerDetails={selUserProfile}
+        widthClass="max-w-2xl"
       />
     </>
   )

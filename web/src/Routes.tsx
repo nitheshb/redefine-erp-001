@@ -113,6 +113,7 @@ const Routes = () => {
 
   return (
     <Router>
+      <Route path="/construct-module" page={ConstructModulePage} name="constructModule" />
       {/* <Route path="/admin/home" page={HomePage} name="home" /> */}
       <Route path="/erp-account-home" page={ErpAccountHomePage} name="erpAccountHome" />
       <Route path="/legal-home" page={LegalHomePage} name="legalHome" />

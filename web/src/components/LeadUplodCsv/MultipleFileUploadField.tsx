@@ -380,7 +380,12 @@ export function MultipleFileUploadField({
   const { getRootProps, getInputProps, isFocused, isDragAccept, isDragReject } =
     useDropzone({
       onDrop,
-      accept: ['Plan Diagram', 'Brouchers', 'Approvals'].includes(title)
+      accept: [
+        'Plan Diagram',
+        'Brouchers',
+        'Approvals',
+        'upload_legal_docs',
+      ].includes(title)
         ? '.pdf'
         : '.csv, text/csv, .xlsx',
       maxSize: 40000 * 1024, // 1200KB
@@ -464,7 +469,12 @@ export function MultipleFileUploadField({
             <time className="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
               or
               <span className="text-blue-600"> pick from local computer </span>
-              {['Plan Diagram', 'Brouchers', 'Approvals'].includes(title)
+              {[
+                'Plan Diagram',
+                'Brouchers',
+                'Approvals',
+                'upload_legal_docs',
+              ].includes(title)
                 ? '*.pdf'
                 : '*.csv'}
               {/* <span className="text-blue-600"> get sample template</span> */}

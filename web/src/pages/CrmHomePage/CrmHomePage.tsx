@@ -16,26 +16,33 @@
 // }
 
 import { useState, useEffect } from 'react'
-import HeadNavBar from '../../components/HeadNavBar/HeadNavBar'
-import DummyBodyLayout from '../../components/DummyBodyLayout/DummyBodyLayout'
-import HeadSideBar from '../../components/HeadSideBar/HeadSideBar'
-import SiderForm from '../../components/SiderForm/SiderForm'
-import ProjectsMHomeBody from '../../components/ProjectsMHomeBody/ProjectsMHomeBody'
-import HeadSideBarDetailView from 'src/components/HeadDetailSideBar'
-import { MetaTags } from '@redwoodjs/web'
-import { getAllProjects } from 'src/context/dbQueryFirebase'
+
 // import { ResponsiveBar } from '@nivo/bar'
 import { EyeIcon, PencilIcon } from '@heroicons/react/outline'
+
 import { Link, routes } from '@redwoodjs/router'
-import AllBankDetailsView from 'src/components/All_BankDetailsView'
+import { MetaTags } from '@redwoodjs/web'
+
 import CrmHome from 'src/components/A_CRMcomp/CrmHome'
 import CrmTaskList from 'src/components/A_CRMcomp/CrmTaskList'
-import FinanceTransactionsHome from 'src/components/TableComp/FinanceTransactionsHome'
-import CrmBucketList from 'src/components/TableComp/CrmBuckets'
-import ProjectsUnitInventory from 'src/components/projectUnitsInventory'
-import { useAuth } from 'src/context/firebase-auth-context'
+import AllBankDetailsView from 'src/components/All_BankDetailsView'
+import ConstructUnitsHome from 'src/components/ConstructModule/ConstructUnitsHome'
+import CustomersSearchHome from 'src/components/CrmModule/CustomersSearchHome'
+import CustomersSearchHome2 from 'src/components/CrmModule/CustomersSearchHome2'
+import HeadSideBarDetailView from 'src/components/HeadDetailSideBar'
 import HeadSideBarDetailView2 from 'src/components/HeadDetailSideBar2'
 import HeadNavBar2 from 'src/components/HeadNavBar/HeadNavBar2'
+import ProjectsUnitInventory from 'src/components/projectUnitsInventory'
+import CrmBucketList from 'src/components/TableComp/CrmBuckets'
+import FinanceTransactionsHome from 'src/components/TableComp/FinanceTransactionsHome'
+import { getAllProjects } from 'src/context/dbQueryFirebase'
+import { useAuth } from 'src/context/firebase-auth-context'
+
+import DummyBodyLayout from '../../components/DummyBodyLayout/DummyBodyLayout'
+import HeadNavBar from '../../components/HeadNavBar/HeadNavBar'
+import HeadSideBar from '../../components/HeadSideBar/HeadSideBar'
+import ProjectsMHomeBody from '../../components/ProjectsMHomeBody/ProjectsMHomeBody'
+import SiderForm from '../../components/SiderForm/SiderForm'
 
 const CrmHomePage = () => {
   const { user } = useAuth()
@@ -393,9 +400,22 @@ const CrmHomePage = () => {
                   <CrmBucketList leadsTyper={'financeModule'} />
                 )}
 
-                {viewable === 'MyCustomers' && <CrmTaskList />}
-                {viewable === 'TeamCustomers' && (
-                  <FinanceTransactionsHome leadsTyper={'financeModule'} />
+                {viewable === 'crmSpace' && <CrmTaskList />}
+                {viewable === 'MyCustomers' && (
+                  <CustomersSearchHome
+                    project={{
+                      projectName: 'Projects',
+                    }}
+                    isEdit={undefined}
+                  />
+                )}
+                {viewable === 'MyCustomers-II' && (
+                  <CustomersSearchHome2
+                    project={{
+                      projectName: 'Projects',
+                    }}
+                    isEdit={undefined}
+                  />
                 )}
 
                 {(viewable === 'Bank Accounts' ||

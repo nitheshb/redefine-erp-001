@@ -484,6 +484,7 @@ const LeadsDummyHome = ({ leadsTyper }) => {
         setOpen={setisImportLeadsOpen}
         title={'Transaction'}
         customerDetails={selUserProfile}
+        widthClass="max-w-4xl"
       />
     </>
   )

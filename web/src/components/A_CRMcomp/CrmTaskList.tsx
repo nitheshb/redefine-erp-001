@@ -1,22 +1,29 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 // import { Link, routes } from '@redwoodjs/router'
+import { Fragment, useState, useEffect } from 'react'
+
+import { useSnackbar } from 'notistack'
+import { DragDropContext, Droppable } from 'react-beautiful-dnd'
+
 import { MetaTags } from '@redwoodjs/web'
 
-import { Fragment, useState, useEffect } from 'react'
 import LLeadsTableView from 'src/components/LLeadsTableView/LLeadsTableView'
 
 // import { XIcon } from '@heroicons/react/outline'
-import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 
-import { useAuth } from 'src/context/firebase-auth-context'
 import { USER_ROLES } from 'src/constants/userRoles'
-import { getAllProjects, updateLeadStatus } from 'src/context/dbQueryFirebase'
+import {
+  getAllProjects,
+  getFinanceTransactionsByStatus,
+  updateLeadStatus,
+} from 'src/context/dbQueryFirebase'
+import { useAuth } from 'src/context/firebase-auth-context'
 import { CustomSelect } from 'src/util/formFields/selectBoxField'
-import SiderForm from '../SiderForm/SiderForm'
+
 import CardItem from '../leadsCard'
+import SiderForm from '../SiderForm/SiderForm'
 import FinanceTableView from '../TableComp/financeTableView'
-import { useSnackbar } from 'notistack'
 
 // import CustomerProfileSideView from './customerProfileSideView'
 // import CardItem from '../../components/leadsCard'
@@ -203,6 +210,8 @@ const CrmTaskList = ({ leadsTyper }) => {
   const [serialLeadsData, setSerialLeadsData] = useState([])
   const [projectList, setprojectList] = useState([])
   const [selProjectIs, setSelProject] = useState('all')
+  const [value, setValue] = useState('latest')
+  const [transactionData, setTransactionData] = useState({})
 
   const statusFields = [
     'new',
@@ -215,7 +224,32 @@ const CrmTaskList = ({ leadsTyper }) => {
     'booked',
   ]
   const archieveFields = ['Dead', 'RNR', 'blocked', 'notinterested']
-
+  const tabHeadFieldsA = [
+    { lab: 'All', val: 'all' },
+    { lab: 'Booked', val: 'booked' },
+    { lab: 'Agreement', val: 'agreement' },
+    { lab: 'Registered', val: 'registered' },
+    { lab: 'Positioned', val: 'positioned' },
+    { lab: 'OverDue', val: 'overdue' },
+    { lab: 'Up Coming Payment', val: 'overdue' },
+  ]
+  const rowsCounter = (parent, searchKey) => {
+    return parent.filter((item) => {
+      if (searchKey === 'all') {
+        return item
+      } else if (item.status.toLowerCase() === searchKey.toLowerCase()) {
+        console.log('All1', item)
+        return item
+      }
+    })
+  }
+  useEffect(() => {
+    getLeadsDataFun()
+  }, [])
+  const viewTransaction = (docData) => {
+    setTransactionData(docData)
+    setisImportLeadsOpen(!isImportLeadsOpen)
+  }
   useEffect(() => {
     if (leadsTyper == 'archieveLeads') {
       const archieveFields1 = ['Review', 'Cleared', 'UnCleared']
@@ -258,15 +292,6 @@ const CrmTaskList = ({ leadsTyper }) => {
   }, [])
   const [getStatus, setGetStatus] = useState([])
 
-  const serealizeData = (array) => {
-    // let newData =
-    const x = statusFields.map((status) => {
-      const items = array.filter((data) => data.Status.toLowerCase() == status)
-
-      return { name: status, items }
-    })
-    setSerialLeadsData(x)
-  }
   const onDragEnd = (re) => {
     console.log('re is', re)
     if (!re.destination) return
@@ -321,6 +346,91 @@ const CrmTaskList = ({ leadsTyper }) => {
     setAddLeadsTypes(type)
     setisImportLeadsOpen(true)
   }
+
+  const getLeadsDataFun = async () => {
+    console.log('login role detials', user)
+    const { access, uid } = user
+
+    if (access?.includes('manage_leads')) {
+      const unsubscribe = getFinanceTransactionsByStatus(
+        orgId,
+        async (querySnapshot) => {
+          const usersListA = querySnapshot.docs.map((docSnapshot) => {
+            const x = docSnapshot.data()
+            x.id = docSnapshot.id
+            return x
+          })
+          // setBoardData
+          console.log('my Array data is ', usersListA, leadsFetchedData)
+          // await serealizeData(usersListA)
+          await setLeadsFetchedData(usersListA)
+          await console.log('my Array data is set it', leadsFetchedData)
+        },
+        {
+          status: [
+            'latest',
+            'reviewing',
+            'review',
+            'cleared',
+            'rejected',
+            '',
+            // 'booked',
+          ],
+        },
+        () => setLeadsFetchedData([])
+      )
+      return unsubscribe
+    } else {
+      const unsubscribe = getFinanceTransactionsByStatus(
+        orgId,
+        async (querySnapshot) => {
+          const usersListA = querySnapshot.docs.map((docSnapshot) => {
+            const x = docSnapshot.data()
+            x.id = docSnapshot.id
+            return x
+          })
+          // setBoardData
+          console.log('my Array data is ', usersListA)
+          await serealizeData(usersListA)
+          await setLeadsFetchedData(usersListA)
+        },
+        {
+          uid: uid,
+          status: [
+            'new',
+            'reviewing',
+            'review',
+            'cleared',
+            'rejected',
+            '',
+            // 'booked',
+          ],
+        },
+        () => setLeadsFetchedData([])
+      )
+      return unsubscribe
+    }
+
+    // await console.log('leadsData', leadsData)
+  }
+
+  const serealizeData = (array) => {
+    // let newData =
+    const x = [
+      'new',
+      'review',
+      'cleared',
+      'rejected',
+      '',
+      // 'booked',
+    ].map((status) => {
+      const items = array.filter((data) => data.Status.toLowerCase() == status)
+
+      return { name: status, items }
+    })
+    setSerialLeadsData(x)
+  }
+
   const selUserProfileF = (title, data) => {
     setAddLeadsTypes(title)
     setisImportLeadsOpen(true)
@@ -466,6 +576,425 @@ const CrmTaskList = ({ leadsTyper }) => {
               </div>
             )}
 
+            {!ready && (
+              <div className="container overflow-hidden rounded-2xl px-6">
+                <div className="flex flex-col app-bg-white-1  pb-10">
+                  <div className="flex flex-row py-5">
+                    <span className="text-lg font-bold app-color-black"></span>
+                  </div>
+
+                  <div className="flex flex-row">
+                    {tabHeadFieldsA.map((fieldHead, i) => (
+                      <div
+                        key={i}
+                        className={`flex flex-col w-40 h-[55px] bg-white pl-5 py-1 mr- border-r-2 border-t-slate-700  ${
+                          value != fieldHead?.val
+                            ? 'bg-[#EAF0F6]'
+                            : 'bg-[#F5F8FA]'
+                        } `}
+                        onClick={() => setValue(fieldHead?.val)}
+                      >
+                        <span
+                          className={`text-[14px] ${
+                            value != fieldHead?.val ? '' : 'text-black'
+                          } font-bold`}
+                        >
+                          {' '}
+                          {rowsCounter(leadsFetchedData, fieldHead?.val).length}
+                        </span>
+                        <span
+                          className={`text-[12px] ${
+                            value != fieldHead?.val ? '' : 'text-black'
+                          }  font-semibold`}
+                        >
+                          {fieldHead?.lab}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex flex-row bg-[#F5F8FA] px-10 pt-6 relative">
+                    <table className="w-full">
+                      <thead>
+                        <tr>
+                          <th className="text-left text-xs app-color-black pb-3">
+                            <span className=""> Schedule</span>
+                          </th>
+                          <th className="text-left text-xs app-color-black pb-3">
+                            <span className="ml-4">Unit Details</span>
+                          </th>
+                          <th className="text-left text-xs app-color-black pb-3">
+                            <span className="ml-4">Customer Details</span>
+                          </th>
+                          <th className="text-left text-xs app-color-black pb-3">
+                            <span className="ml-4">Demands</span>
+                          </th>
+                          <th className="text-left text-xs app-color-black pb-3">
+                            <span className="ml-4">Received</span>
+                          </th>
+                          <th className="text-left text-xs app-color-black pb-3">
+                            Status
+                          </th>
+
+                          <th className="text-left text-xs app-color-black pb-3">
+                            COMMENTS
+                          </th>
+
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {leadsFetchedData.map((finData, i) => (
+                          <tr
+                            className="app-border-1 border-y border-slate-200 my-2 "
+                            key={i}
+                            onClick={() => viewTransaction(finData)}
+                          >
+                            <td>
+                              <div className="flex  items-center rounded-md  app-bg-yellow-2 app-color-yellow-1 text-md font-semibold">
+                                {i + 1}{' '}
+                                <span className="ml-1 text-xs font-thin">
+                                  day Due
+                                </span>
+                              </div>
+                              <div
+                                className={` text-xs font-semibold  py-0.5 `}
+                              >
+                                {'Agreement'}
+                              </div>
+                            </td>
+                            <td>
+                              <div className="flex flex-row py-3 ml-4">
+                                <div className="mr-2 w-[3px] rounded-2xl  bg-violet-300 "></div>
+                                <div className="flex flex-col">
+                                  <span className="font-semibold text-sm app-color-black">
+                                    {finData?.fromObj?.name || 'Plot No -103'}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {'Phase-1'}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {'Subha Ecostone'}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {finData?.fromObj?.branch}
+                                  </span>
+                                </div>
+                              </div>
+                            </td>
+
+                            <td>
+                              <div className="flex flex-row py-3 ml-4">
+                                <div className="mr-2 w-[3px] rounded-2xl  bg-violet-300 "></div>
+                                <div className="flex flex-col">
+                                  <span className="font-semibold text-sm app-color-black">
+                                    {finData?.fromObj?.name || 'Vikram Bose'}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {'9849-000-525'}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {finData?.fromObj?.bankName}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {finData?.fromObj?.branch}
+                                  </span>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="text-left">
+                              <div className="flex flex-row py-3 ml-4">
+                                <div className="flex flex-col">
+                                  <span className="font-semibold text-sm app-color-black">
+                                    Rs {finData?.amount}
+                                  </span>
+                                  <span className="font-semibold text-sm app-color-black">
+                                    <span className="font-normal text-xs app-color-gray-1">
+                                      {'26-10-2022'}
+                                    </span>
+                                  </span>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="text-left">
+                              <div className="flex flex-row py-3 ml-4">
+                                <div className="flex flex-col">
+                                  <span className="font-semibold text-sm app-color-black">
+                                    Rs {finData?.amount}
+                                  </span>
+                                  <span className="font-semibold text-sm app-color-black">
+                                    <span className="font-normal text-xs app-color-gray-1">
+                                      {'26-10-2022'}
+                                    </span>
+                                  </span>
+                                </div>
+                              </div>
+                            </td>
+
+                            <td>
+                              <span className="text-left font-semibold text-md app-color-gray-1">
+                                Review
+                              </span>
+                            </td>
+                            <td>
+                              <svg
+                                className="w-6 h-6 app-color-blue-3"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+                                ></path>
+                              </svg>
+                            </td>
+                          </tr>
+                        ))}
+                        {[
+                          {
+                            fromObj: {
+                              name: 'Vikram Bose',
+                              accountNo: '52346673647',
+                              bankName: 'Andhara Bank',
+                              branch: 'Hsr layout',
+                            },
+                            toAccount: {
+                              name: 'Vertex Apartment',
+                              accountNo: '52346673647',
+                              bankName: 'Andhara Bank',
+                              branch: 'Hsr layout',
+                            },
+                            projDetails: {
+                              projName: 'Vertex Apartments',
+                              projId: 123456,
+                              unitId: 9876,
+                            },
+                            amount: 123000,
+                            mode: 'Neft/Imps',
+                            transactionNo: 12334,
+                            demandNo: 3456,
+                            transactionDate: '12-july-2022',
+                            dated: '12-july-2022',
+                            status: 'inreveiw',
+                          },
+                        ].map((dat, i) => (
+                          <tr
+                            className="app-border-1 border-y border-slate-200 my-2 py-2 h-[120px]"
+                            key={i}
+                          >
+                            <td>
+                              <div className="flex justify-center text-right items-center rounded-md w-8 h-8 app-bg-yellow-2 app-color-yellow-1 text-lg font-semibold">
+                                {i + 1}
+                              </div>
+                              <div
+                                className={`${
+                                  dat?.status === 'cleared'
+                                    ? 'bg-green-700'
+                                    : dat?.status === 'rejected'
+                                    ? 'bg-yellow-600'
+                                    : 'bg-violet-600'
+                                }   w-24 text-xs font-semibold px-3 py-0.5 rounded-br-md rounded-tl-md text-white`}
+                              >
+                                {dat?.status?.toLocaleUpperCase()}
+                              </div>
+                            </td>
+                            <td>
+                              <div className="flex flex-row py-3 ml-4">
+                                <div className="mr-2 w-[3px] rounded-2xl  bg-violet-300 "></div>
+                                <div className="flex flex-col">
+                                  <span className="font-semibold text-sm app-color-black">
+                                    {dat?.fromObj.name || 'Vikram Bose'}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {'52346673647'}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {dat?.fromObj.bankName}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {dat?.fromObj.branch}
+                                  </span>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="flex flex-row ml-4 py-3">
+                                <div className="mr-2 w-[3px] rounded-2xl bg-violet-300  "></div>
+                                <div className="flex flex-col">
+                                  <span className="font-semibold text-sm app-color-black">
+                                    {dat?.toAccount.name}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {dat?.toAccount.accountNo}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {dat?.toAccount.bankName}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {dat?.toAccount.branch}
+                                  </span>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="flex flex-row py-3">
+                                {/* <div className="mr-2 w-[3px]  bg-gray-100 "></div> */}
+                                <div className="flex flex-col">
+                                  <span className="font-semibold text-sm app-color-black">
+                                    {dat?.mode}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {dat?.transactionNo}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {dat?.dated}
+                                  </span>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="text-right">
+                              <span className="text-right font-semibold text-sm app-color-gray-1 mr-10">
+                                Rs {dat?.amount}
+                              </span>
+                            </td>
+
+                            <td>
+                              <span className="ml-3 font-semibold text-md app-color-gray-1">
+                                NA
+                              </span>
+                            </td>
+                            <td>
+                              <svg
+                                className="w-6 h-6 app-color-blue-3"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+                                ></path>
+                              </svg>
+                            </td>
+                          </tr>
+                        ))}
+                        {leadsFetchedData.map((dat, i) => (
+                          <tr
+                            className="app-border-1 border-y border-slate-200 my-2 py-2 h-[120px]"
+                            key={i}
+                            onClick={() => selUserProfileF('Transaction', dat)}
+                          >
+                            <td>
+                              <div className="flex justify-center text-right items-center rounded-md w-8 h-8 app-bg-yellow-2 app-color-yellow-1 text-lg font-semibold">
+                                {i + 1}
+                              </div>
+                              <div
+                                className={`${
+                                  dat?.status === 'cleared'
+                                    ? 'bg-green-700'
+                                    : dat?.status === 'rejected'
+                                    ? 'bg-yellow-600'
+                                    : 'bg-violet-600'
+                                }   w-24 text-xs font-semibold px-3 py-0.5 rounded-br-md rounded-tl-md text-white`}
+                              >
+                                {dat?.status?.toLocaleUpperCase()}
+                              </div>
+                            </td>
+                            <td>
+                              <div className="flex flex-row py-3 ml-4">
+                                <div className="mr-2 w-[3px] rounded-2xl  bg-violet-300 "></div>
+                                <div className="flex flex-col">
+                                  <span className="font-semibold text-sm app-color-black">
+                                    {dat?.fromObj?.name || 'Vikram Bose'}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {dat?.fromObj?.accountNo || '52346673647'}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {dat?.fromObj?.bankName || 'Andhara Bank'}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {dat?.fromObj?.branch || 'Hsr layout'}
+                                  </span>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="flex flex-row ml-4 py-3">
+                                <div className="mr-2 w-[3px] rounded-2xl bg-violet-300  "></div>
+                                <div className="flex flex-col">
+                                  <span className="font-semibold text-sm app-color-black">
+                                    {dat?.toAccount?.name || 'Vertex Apartment'}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {dat?.toAccount?.accountNo || '52346673647'}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {dat?.toAccount?.bankName || 'Andhara Bank'}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {dat?.toAccount?.branch || 'Hsr layout'}
+                                  </span>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="flex flex-row py-3">
+                                {/* <div className="mr-2 w-[3px]  bg-gray-100 "></div> */}
+                                <div className="flex flex-col">
+                                  <span className="font-semibold text-sm app-color-black">
+                                    {dat?.mode}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {dat?.chequeno}
+                                  </span>
+                                  <span className="font-normal text-xs app-color-gray-1">
+                                    {dat?.dated}
+                                  </span>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="text-right">
+                              <span className="text-right font-semibold text-sm app-color-gray-1 mr-10">
+                                Rs {dat?.amount}
+                              </span>
+                            </td>
+
+                            <td>
+                              <span className="ml-3 font-semibold text-md app-color-gray-1">
+                                NA
+                              </span>
+                            </td>
+                            <td>
+                              <svg
+                                className="w-6 h-6 app-color-blue-3"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+                                ></path>
+                              </svg>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
             {!ready && (
               <div className="container overflow-hidden rounded-2xl">
                 <div className="flex flex-col app-bg-white-1  pb-10">
@@ -918,8 +1447,10 @@ const CrmTaskList = ({ leadsTyper }) => {
       <SiderForm
         open={isImportLeadsOpen}
         setOpen={setisImportLeadsOpen}
-        title={addLeadsTypes}
+        title={'CrmUnitSideView'}
         customerDetails={selUserProfile}
+        widthClass="max-w-4xl"
+        transactionData={transactionData}
       />
     </>
   )

@@ -187,7 +187,6 @@ const ExecutiveHomeViewerPage = ({ leadsTyper }) => {
     filter_Leads_Projects_Users_Fun()
   }, [selProjectIs, selLeadsOf, startDate, endDate])
 
-
   useEffect(() => {
     console.log('am refreshed ')
     filter_Leads_Projects_Users_Fun()
@@ -877,6 +876,7 @@ const ExecutiveHomeViewerPage = ({ leadsTyper }) => {
         open={isImportLeadsOpen}
         setOpen={setisImportLeadsOpen}
         title={addLeadsTypes}
+        widthClass="max-w-4xl"
         customerDetails={selUserProfile}
         unitsViewMode={unitsViewMode}
         setUnitsViewMode={setUnitsViewMode}

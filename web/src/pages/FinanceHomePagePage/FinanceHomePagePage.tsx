@@ -1031,12 +1031,14 @@ const FinanceHomePagePage = () => {
               setOpen={handleNewProjectClose}
               title="Create Project"
               data={{}}
+              widthClass="max-w-2xl"
             />
             <SiderForm
               open={isEditProjectOpen}
               setOpen={handleEditProjectClose}
               title="Edit Project"
               data={project}
+              widthClass="max-w-2xl"
             />
           </div>
           <MetaTags title="ExecutiveHome" description="ExecutiveHome page" />

@@ -53,7 +53,10 @@ const LeadsManagementHome = () => {
         console.log('fetched details are', usersListA.length)
         setLeadsFetchedData(usersListA)
       },
-      { status: ['unassigned'],isCp: user?.role?.includes(USER_ROLES.CP_AGENT), },
+      {
+        status: ['unassigned'],
+        isCp: user?.role?.includes(USER_ROLES.CP_AGENT),
+      },
       (error) => setLeadsFetchedData([])
     )
     return unsubscribe
@@ -287,6 +290,8 @@ const LeadsManagementHome = () => {
         open={isImportLeadsOpen}
         setOpen={setisImportLeadsOpen}
         title={addLeadsTypes}
+        widthClass="max-w-4xl"
+
         // customerDetails={selUserProfile}
       />
     </>

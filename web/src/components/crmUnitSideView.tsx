@@ -3,7 +3,10 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { Fragment, useEffect, useState } from 'react'
+
 import { Menu } from '@headlessui/react'
+import { Listbox, Transition } from '@headlessui/react'
+import { ArrowRightIcon } from '@heroicons/react/outline'
 import {
   BadgeCheckIcon,
   DocumentIcon,
@@ -12,16 +15,21 @@ import {
   ViewGridIcon,
   XIcon,
 } from '@heroicons/react/solid'
-import { v4 as uuidv4 } from 'uuid'
-import { ArrowRightIcon } from '@heroicons/react/outline'
-import { CustomSelect } from 'src/util/formFields/selectBoxField'
-import SortComp from './sortComp'
-import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, SelectorIcon, DownloadIcon } from '@heroicons/react/solid'
-import { useAuth } from 'src/context/firebase-auth-context'
+import ClockIcon from '@heroicons/react/solid/ClockIcon'
+import PlusCircleIcon from '@heroicons/react/solid/PlusCircleIcon'
+import { VerticalAlignBottom } from '@mui/icons-material'
+import { DateTimePicker } from '@mui/lab'
+import DesktopDatePicker from '@mui/lab/DesktopDatePicker'
+import TimePicker from '@mui/lab/TimePicker'
+import { TextField } from '@mui/material'
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
-import { storage } from 'src/context/firebaseConfig'
+import DatePicker from 'react-datepicker'
+import { useDropzone } from 'react-dropzone'
 import toast from 'react-hot-toast'
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   addLeadScheduler,
@@ -37,34 +45,24 @@ import {
   getAllProjects,
   updateLeadProject,
 } from 'src/context/dbQueryFirebase'
-import { useDropzone } from 'react-dropzone'
-import PlusCircleIcon from '@heroicons/react/solid/PlusCircleIcon'
-import ClockIcon from '@heroicons/react/solid/ClockIcon'
+import { useAuth } from 'src/context/firebase-auth-context'
+import { storage } from 'src/context/firebaseConfig'
+import { prettyDate, prettyDateTime, timeConv } from 'src/util/dateConverter'
+import { CustomSelect } from 'src/util/formFields/selectBoxField'
 
-import {
-
-  prettyDate,
-  prettyDateTime,
-  timeConv,
-} from 'src/util/dateConverter'
-import { LocalizationProvider } from '@mui/x-date-pickers'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { DateTimePicker } from '@mui/lab'
-import DesktopDatePicker from '@mui/lab/DesktopDatePicker'
-import { TextField } from '@mui/material'
-import TimePicker from '@mui/lab/TimePicker'
-import DatePicker from 'react-datepicker'
+import SortComp from './sortComp'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import { setHours, setMinutes } from 'date-fns'
 import { Timestamp } from 'firebase/firestore'
+
 import StatusDropComp from './statusDropComp'
 import AssigedToDropComp from './assignedToDropComp'
 import Loader from './Loader/Loader'
-import { VerticalAlignBottom } from '@mui/icons-material'
 import ProjPhaseHome from './ProjPhaseHome/ProjPhaseHome'
 import AddBookingForm from './bookingForm'
 import { H4 } from './Typography'
+
 import { useSnackbar } from 'notistack'
 
 // interface iToastInfo {
@@ -523,44 +521,38 @@ export default function CrmUnitSideView({
     <div
       className={`bg-white   h-screen    ${openUserProfile ? 'hidden' : ''} `}
     >
-      <div className="">
-        <div className="p-3 flex justify-between">
-          <span className="text-md mt-1 font-semibold text-xl mr-auto ml-1 text-[#053219] tracking-wide">
+      <div className="flex flex-row justify-between">
+        <div className="p-3">
+          <span className="text-md flex mt-1 font-semibold text-xl mr-auto ml-1 text-[#053219] tracking-wide">
             Unit Summary
           </span>
+
           {/* <XIcon className="w-5 h-5 mt-[2px]" /> */}
         </div>
-      </div>
-      <div className="py-3 px-3 m-4 mt-2 rounded-lg border border-gray-100 h-screen overflow-y-auto">
-        <div className="flex flex-row justify-between">
-          {/* <div className="px-3  font-md font-medium text-sm mt-3 mb-2 text-gray-800">
-            Customer Details
-          </div> */}
-
-          <div className="inline mt-2 ml-2 mb-5">
-            <div className="">
-              <label className="font-semibold text-[#053219]  text-sm  mt-3 mb-1  tracking-wide ">
-                Transaction Details<abbr title="required"></abbr>
-              </label>
+        <div className="p-3">
+          <div className="flex justify-center items-center space-x-4">
+            <div className="w-8 h-8">
+              <img
+                className="w-full h-full"
+                alt="logo"
+                src="https://i.ibb.co/L8KSdNQ/image-3.png"
+              />
             </div>
-
-            <div className="border-t-4 rounded-xl w-16 mt-1 border-green-600"></div>
-          </div>
-          <div className="p-3 flex flex-col">
-            <span
-              className={`items-center h-6 px-3 py-1 mt-1 text-xs font-semibold text-green-500 bg-green-100 rounded-full
-                      `}
-            >
-              {'In-Progress'}
-            </span>
+            <div className="flex flex-col justify-start items-center">
+              <p className="text-lg leading-6 dark:text-white font-semibold text-gray-800">
+                Subha Ecostone
+              </p>
+            </div>
           </div>
         </div>
-        <div className="flex justify-center flex-col md:flex-row flex-col items-stretch w-full space-y-4 md:space-y-0 md:space-x-6 xl:space-x-8">
-          <div className="flex flex-col px-4 py-6 md:p-6 xl:p-8 w-full bg-gray-50 dark:bg-gray-800 space-y-6">
+      </div>
+      <div className=" m-4 mt-2 p-3 rounded-lg border border-gray-100 h-screen overflow-y-auto">
+        <div className="flex justify-center flex-col md:flex-row flex-col items-stretch w-full space-y-1 md:space-y-0 md:space-x-6 xl:space-x-8 mb-3">
+          <div className="flex flex-col p-3 w-full bg-gray-50 dark:bg-gray-800 space-y-6">
             <h4 className="text-md dark:text-white font-semibold leading-5 text-gray-800">
               Customer Details
             </h4>
-            <div className="flex justify-center items-center w-full space-y-2 flex-col border-gray-200 border-b pb-6">
+            <div className="flex justify-center items-center w-full space-y-2 flex-col border-gray-200 border-b pb-1">
               <div className="flex justify-between items-center w-full">
                 <p className="text-xs text-gray-600  uppercase">
                   Applicant Name{' '}
@@ -577,54 +569,90 @@ export default function CrmUnitSideView({
                   Selvi Subramani
                 </p>
               </div>
+              <div className="flex justify-between w-full">
+                <p className="text-xs text-gray-600  uppercase">
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M19 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5Z"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M3 7L12 13L21 7"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </p>
+                <p className="text-sm dark:text-gray-300 leading-4 text-blue-600">
+                  Sakthipharma07@gmail.com
+                </p>
+              </div>
+              <div className="flex justify-between w-full">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M19 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5Z"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M3 7L12 13L21 7"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <p className="text-sm dark:text-gray-300 leading-4 text-blue-600">
+                  9849000525
+                </p>
+              </div>
             </div>
-            <div className="flex justify-center text-gray-800 dark:text-white md:justify-start items-center space-x-4 pb-4 border-b border-gray-200 w-full">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M19 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5Z"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M3 7L12 13L21 7"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <p className="cursor-pointer text-sm leading-5 ">
-                Sakthipharma07@gmail.com
-              </p>
-            </div>
-            <div className="flex justify-center text-gray-800 dark:text-white md:justify-start items-center space-x-4 pb-4 border-b border-gray-200 w-full">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M19 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5Z"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M3 7L12 13L21 7"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <p className="cursor-pointer text-sm leading-5 ">9849000525</p>
+
+            <div className="w-full text-center mt- border-gray-200 border-b pb-2">
+              <div className="flex justify-between   pb-0">
+                <div className="p-3 text-center">
+                  <span className="text-sm font-semibold  block uppercase tracking-wide text-slate-900">
+                    1,163
+                  </span>
+                  <span className="font-md text-xs text-gray-600 tracking-wide uppercase">
+                    Demanded
+                  </span>
+                  {/* <div className="font-md text-xs mt-2 text-gray-500 mb-[1] tracking-wide">
+                  Assigned To
+                </div> */}
+                </div>
+                <div className="p-3 text-center">
+                  <span className="text-sm font-semibold  block uppercase tracking-wide text-gray-900">
+                    4,100
+                  </span>
+                  <span className="font-md text-xs text-gray-600 tracking-wide uppercase">
+                    Received
+                  </span>
+                </div>
+                <div className="p-3 text-center">
+                  <span className="text-sm font-semibold block uppercase tracking-wide text-gray-900">
+                    47,68,300
+                  </span>
+                  <span className="font-md text-xs text-gray-600 tracking-wide uppercase">
+                    Balance
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
           <div className="flex flex-col justify- px-4 py-6 md:p-6 xl:p-8 w-full bg-gray-50 dark:bg-gray-800 space-y-3">
@@ -633,19 +661,32 @@ export default function CrmUnitSideView({
             </h4>
             <div className="flex justify-center items-center w-full space-y-2 flex-col border-gray-200 border-b pb-6">
               <div className="flex justify-between items-center w-full">
-                <p className="font-md text-sm text-gray-600 tracking-wide uppercase">
+                <p className="font-xs text-xs text-gray-600 tracking-wide uppercase">
                   Unit No{' '}
                 </p>
-                <p className="text-base dark:text-gray-300 leading-4 text-blue-800">
+                <p className="text-xs  font-xs dark:text-gray-300 leading-4 text-blue-800">
                   52
                 </p>
               </div>
               <div className="flex justify-between w-full">
-                <p className="font-md text-sm text-gray-600 tracking-wide uppercase">
+                <p className="font-xs text-xs text-gray-600 tracking-wide uppercase">
                   Facing{' '}
                 </p>
-                <p className="text-base dark:text-gray-300 leading-4 text-gray-600">
+                <p className="text-xs font-xs dark:text-gray-300 leading-4 text-gray-600">
                   North East
+                </p>
+              </div>
+              <div className="flex justify-between w-full">
+                <p className="font-xs text-xs text-gray-600 tracking-wide uppercase">
+                  Unit Manager{' '}
+                </p>
+                <p className="text-xs font-xs dark:text-gray-300 leading-4 text-gray-600">
+                  <AssigedToDropComp
+                    assignerName={assignerName}
+                    id={id}
+                    setAssigner={setAssigner}
+                    usersList={usersList}
+                  />
                 </p>
               </div>
             </div>
@@ -676,107 +717,6 @@ export default function CrmUnitSideView({
                   </span>
                   <span className="font-md text-xs text-gray-600 tracking-wide uppercase">
                     Site Cost
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-between items-start w-full">
-              <div className="flex justify-center items-center space-x-4">
-                <div className="w-8 h-8">
-                  <img
-                    className="w-full h-full"
-                    alt="logo"
-                    src="https://i.ibb.co/L8KSdNQ/image-3.png"
-                  />
-                </div>
-                <div className="flex flex-col justify-start items-center">
-                  <p className="text-lg leading-6 dark:text-white font-semibold text-gray-800">
-                    Subha Ecostone
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="flex justify-center flex-col md:flex-row  items-stretch w-full space-y-4 md:space-y-0 md:space-x-6 xl:space-x-8 my-4">
-          <div className="flex flex-col px-4 py-6 md:p-6 xl:p-8 w-full bg-gray-50 dark:bg-gray-800 space-y-6">
-            <div className="flex flex-row justify-between">
-              <div className="font-lg text-sm text-slate-900 min-w-[33%]">
-                <div className="font-md text-xs mt-2 text-gray-500 mb-[1] tracking-wide">
-                  Assigned To
-                </div>
-                <AssigedToDropComp
-                  assignerName={assignerName}
-                  id={id}
-                  setAssigner={setAssigner}
-                  usersList={usersList}
-                />
-                {/* <CustomSelect
-                name="roleName"
-                label=""
-                className="input mt-1 border-0"
-                onChange={(value) => {
-                  formik.setFieldValue('myRole', value.value)
-                  console.log('i was changed', value, usersList)
-                  setAssigner(id, value)
-                }}
-                value={assignedTo}
-                options={usersList}
-              /> */}
-              </div>
-              <div className="font-lg text-sm text-slate-900 min-w-[33%] ml-1">
-                <div className="font-md text-xs mt-2 text-gray-500 mb-[1] tracking-wide">
-                  Status
-                </div>
-                <StatusDropComp
-                  leadStatus={tempLeadStatus}
-                  id={id}
-                  setStatusFun={setStatusFun}
-                />
-                {/* <CustomSelect
-                name="roleName"
-                label=""
-                className="input mt-1"
-                onChange={(value) => {
-                  // formik.setFieldValue('myRole', value.value)
-                  console.log('i was changed', value)
-                  setStatusFun(id, value.value)
-                }}
-                value={leadStatus}
-                options={statuslist}
-              /> */}
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-col px-4 py-6 md:p-6 xl:p-8 w-full bg-gray-50  dark:bg-gray-800 space-y-6">
-            <div className="w-full text-center mt- border-gray-200 border-b pb-2">
-              <div className="flex justify-between lg:pt-4 pt-8 pb-0">
-                <div className="p-3 text-center">
-                  <span className="text-sm font-semibold  block uppercase tracking-wide text-slate-900">
-                    1,163
-                  </span>
-                  <span className="font-md text-xs text-gray-600 tracking-wide uppercase">
-                    Demanded
-                  </span>
-                  {/* <div className="font-md text-xs mt-2 text-gray-500 mb-[1] tracking-wide">
-                  Assigned To
-                </div> */}
-                </div>
-                <div className="p-3 text-center">
-                  <span className="text-sm font-semibold  block uppercase tracking-wide text-gray-900">
-                    4,100
-                  </span>
-                  <span className="font-md text-xs text-gray-600 tracking-wide uppercase">
-                    Received
-                  </span>
-                </div>
-                <div className="p-3 text-center">
-                  <span className="text-sm font-semibold block uppercase tracking-wide text-gray-900">
-                    47,68,300
-                  </span>
-                  <span className="font-md text-xs text-gray-600 tracking-wide uppercase">
-                    Balance
                   </span>
                 </div>
               </div>
@@ -856,14 +796,14 @@ export default function CrmUnitSideView({
 
                 <div className=" border-gray-200 ">
                   <ul
-                    className="flex   bg-black rounded-t-lg"
+                    className="flex   bg-[#F9FAFB] rounded-t-lg"
                     id="myTab"
                     data-tabs-toggle="#myTabContent"
                     role="tablist"
                   >
                     {[
                       // { lab: 'Schedules', val: 'appointments' },
-                      // { lab: 'Tasks', val: 'tasks' },
+                      { lab: 'Tasks', val: 'tasks' },
                       { lab: 'Payment Summary', val: 'payment_summary' },
                       { lab: 'Cost Information', val: 'cost_information' },
 
@@ -880,9 +820,9 @@ export default function CrmUnitSideView({
                       return (
                         <li key={i} className="mr-2" role="presentation">
                           <button
-                            className={`inline-block py-3 px-4 text-sm font-medium text-center text-white rounded-t-lg border-b-2  hover:text-white hover:border-gray-300   ${
+                            className={`inline-block py-3 px-4 text-sm font-medium text-center text-black rounded-t-lg border-b-2  hover:text-black hover:border-gray-300   ${
                               selFeature === d.val
-                                ? 'border-white text-white'
+                                ? 'border-black text-black'
                                 : 'border-transparent'
                             }`}
                             type="button"

@@ -1,16 +1,10 @@
+import { Fragment } from 'react'
+
 import { Menu, Transition } from '@headlessui/react'
-import { Fragment, useEffect, useState } from 'react'
 import {
   ChevronDownIcon,
   FireIcon,
-  CalendarIcon,
-  ArrowCircleLeftIcon,
   CurrencyRupeeIcon,
-  BadgeCheckIcon,
-  XCircleIcon,
-  RefreshIcon,
-  BanIcon,
-  SelectorIcon,
   DotsVerticalIcon,
   CheckIcon,
   DocumentTextIcon,

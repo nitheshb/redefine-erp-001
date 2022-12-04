@@ -1,19 +1,13 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import { Dialog } from '@headlessui/react'
 import { useState, useEffect } from 'react'
-import { RadioGroup } from '@headlessui/react'
-import { Label, InputField, TextAreaField, FieldError } from '@redwoodjs/forms'
-import Select from 'react-select'
-import { Form, Formik } from 'formik'
-import * as Yup from 'yup'
-import NumberFormat from 'react-number-format'
 
-import { TextField } from 'src/util/formFields/TextField'
-import { CustomSelect } from 'src/util/formFields/selectBoxField'
-import Loader from './Loader/Loader'
-import { PhoneNoField } from 'src/util/formFields/phNoField'
+import { Dialog } from '@headlessui/react'
+import { Timestamp } from 'firebase/firestore'
+import { Formik } from 'formik'
+import * as Yup from 'yup'
+
 import {
   addUnit,
   checkIfUnitAlreadyExists,
@@ -21,16 +15,11 @@ import {
   steamUsersListByRole,
 } from 'src/context/dbQueryFirebase'
 import { useAuth } from 'src/context/firebase-auth-context'
-import { Timestamp } from 'firebase/firestore'
-import { useRouterStateSetter } from '@redwoodjs/router/dist/router-context'
-import {
-  sendWhatAppMediaSms,
-  sendWhatAppTextSms,
-} from 'src/util/axiosWhatAppApi'
+
 import CostBreakUpSheet from './costBreakUpSheet'
-import UnitOverView from './unitDetailsCategory/unitOverView'
 import UnitDocumentsBody from './unitDetailsCategory/unitDocuments'
 import UnitFinanceBody from './unitDetailsCategory/unitFinance'
+import UnitOverView from './unitDetailsCategory/unitOverView'
 const ViewUnitDetails = ({
   title,
   data,
@@ -281,8 +270,33 @@ const ViewUnitDetails = ({
   return (
     <div className="h-full flex flex-col py-6 bg-white shadow-xl overflow-y-scroll">
       <div className="px-4 sm:px-6  z-10 flex items-center justify-between">
-        <Dialog.Title className=" font-semibold text-xl mr-auto ml-2 text-[#053219]">
-          Unit Detail View
+        <Dialog.Title className=" font-semibold text-xl mr-auto ml-2 text-[#053219] w-full">
+          <div className="flex flex-row justify-between">
+            <>
+              <div className="font-semibold text-[#053219]  text-sm  mb-[1] tracking-wide">
+                {data?.unitDetail?.unit_no}
+                <span
+                  className={`items-center h-6 px-3 py-1 ml-3 mt-1 text-xs font-semibold text-green-500 bg-green-100 rounded-full mr-2
+                      `}
+                >
+                  {data?.unitDetail?.status}
+                </span>
+              </div>
+            </>
+
+            {/* 2 */}
+            <div className=" flex flex-row">
+              <div className="font text-sm text-slate-900 tracking-wide overflow-ellipsis overflow-hidden">
+                {projectDetails?.projectName}
+              </div>
+              {/* <span
+                className={`items-center h-6 px-3 py-1 mt-1 text-xs font-semibold text-green-500 bg-green-100 rounded-full
+                      `}
+              >
+                {projectDetails?.projectType?.name}
+              </span> */}
+            </div>
+          </div>
         </Dialog.Title>
       </div>
 
@@ -313,37 +327,8 @@ const ViewUnitDetails = ({
             >
               {(formik) => (
                 <div className="mt-4">
-                  <div className="">
-                    <div className="flex flex-row justify-between">
-                      <section>
-                        <div className="font-semibold text-[#053219]  text-sm  mb-[1] tracking-wide">
-                          {data?.unitDetail?.unit_no}
-                        </div>
-                        <div className="font text-sm text-slate-900 tracking-wide overflow-ellipsis overflow-hidden">
-                          {projectDetails?.projectName}
-                        </div>
-                      </section>
-
-                      {/* 2 */}
-                      <div className="p-3 flex flex-row">
-                        <span
-                          className={`items-center h-6 px-3 py-1 mt-1 text-xs font-semibold text-green-500 bg-green-100 rounded-full mr-2
-                      `}
-                        >
-                          {data?.unitDetail?.status}
-                        </span>
-                        <span
-                          className={`items-center h-6 px-3 py-1 mt-1 text-xs font-semibold text-green-500 bg-green-100 rounded-full
-                      `}
-                        >
-                          {projectDetails?.projectType?.name}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
                   <div className="py-3 grid grid-cols-3 mb-4">
-                    <section className="flex flex-col bg-[#FCF4F0] p-3 border border-[#e8e1e1] rounded-md">
+                    <section className="flex flex-col bg-[#F6F7FF] p-3 border border-[#e5e7f8] rounded-md">
                       <section className="flex flow-row justify-between mb-1">
                         <div className="font-md text-xs text-gray-700 tracking-wide">
                           Unit No
@@ -360,7 +345,9 @@ const ViewUnitDetails = ({
                           </span>
                         </div>
                         <div className="font-md text-xs tracking-wide font-semibold text-slate-900 ">
-                          {data?.unitDetail?.builtup_area}
+                          {data?.unitDetail?.builtup_area?.toLocaleString(
+                            'en-IN'
+                          )}
                         </div>
                       </section>
                       <section className="flex flow-row justify-between mb-1">
@@ -376,17 +363,19 @@ const ViewUnitDetails = ({
                           BUA
                         </div>
                         <div className="font-md text-xs tracking-wide font-semibold text-slate-900 ">
-                          {data?.unitDetail?.builtup_area}
+                          {data?.unitDetail?.builtup_area?.toLocaleString(
+                            'en-IN'
+                          )}
                         </div>
                       </section>
                     </section>
-                    <section className="flex flex-col mx-4 bg-[#FCF4F0] p-3 border border-[#e8e1e1] rounded-md ">
+                    <section className="flex flex-col mx-4 bg-[#F6F7FF] p-3 border border-[#e5e7f8] rounded-md ">
                       <section className="flex flow-row justify-between mb-1">
                         <div className="font-md text-xs text-gray-700 tracking-wide">
                           East
                         </div>
                         <div className="font-md text-xs tracking-wide font-semibold text-slate-900 ">
-                          {data?.unitDetail?.east}
+                          {data?.unitDetail?.east?.toLocaleString('en-IN')}
                         </div>
                       </section>
                       <section className="flex flow-row justify-between mb-1">
@@ -394,7 +383,7 @@ const ViewUnitDetails = ({
                           West
                         </div>
                         <div className="font-md text-xs tracking-wide font-semibold text-slate-900 ">
-                          {data?.unitDetail?.west}
+                          {data?.unitDetail?.west?.toLocaleString('en-IN')}
                         </div>
                       </section>
                       <section className="flex flow-row justify-between mb-1">
@@ -402,7 +391,7 @@ const ViewUnitDetails = ({
                           South
                         </div>
                         <div className="font-md text-xs tracking-wide font-semibold text-slate-900 ">
-                          {data?.unitDetail?.south}
+                          {data?.unitDetail?.south?.toLocaleString('en-IN')}
                         </div>
                       </section>
                       <section className="flex flow-row justify-between mb-1">
@@ -410,18 +399,20 @@ const ViewUnitDetails = ({
                           North
                         </div>
                         <div className="font-md text-xs tracking-wide font-semibold text-slate-900 ">
-                          {data?.unitDetail?.north}
+                          {data?.unitDetail?.north?.toLocaleString('en-IN')}
                         </div>
                       </section>
                     </section>
-                    <section className="flex flex-col bg-[#FCF4F0] p-3 border border-[#e8e1e1] rounded-md ">
+                    <section className="flex flex-col bg-[#F6F7FF] p-3 border border-[#e5e7f8] rounded-md ">
                       <section className="flex flow-row justify-between mb-1">
                         <div className="font-md text-xs text-gray-700 tracking-wide">
                           Cost
                         </div>
                         <div className="font-md text-xs tracking-wide font-semibold text-slate-900 ">
-                          {data?.unitDetail?.builtup_area *
-                            data?.unitDetail?.rate_per_sqft}
+                          {(
+                            data?.unitDetail?.builtup_area *
+                            data?.unitDetail?.rate_per_sqft
+                          )?.toLocaleString('en-IN')}
                         </div>
                       </section>
                       <section className="flex flow-row justify-between mb-1">
@@ -429,7 +420,9 @@ const ViewUnitDetails = ({
                           PLC
                         </div>
                         <div className="font-md text-xs tracking-wide font-semibold text-slate-900 ">
-                          {data?.unitDetail?.builtup_area}
+                          {data?.unitDetail?.builtup_area?.toLocaleString(
+                            'en-IN'
+                          )}
                         </div>
                       </section>
                       <section className="flex flow-row justify-between mb-1">
@@ -508,7 +501,11 @@ const ViewUnitDetails = ({
                           <UnitOverView data={data} />
                         </>
                       )}
-                      {unitDetailCat === 'finance' && <><UnitFinanceBody /></>}
+                      {unitDetailCat === 'finance' && (
+                        <>
+                          <UnitFinanceBody />
+                        </>
+                      )}
                       {unitDetailCat === 'documents' && (
                         <>
                           <UnitDocumentsBody />

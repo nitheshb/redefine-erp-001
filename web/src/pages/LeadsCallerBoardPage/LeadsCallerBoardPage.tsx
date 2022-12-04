@@ -1,6 +1,7 @@
 import { Fragment, useState } from 'react'
 
 import { Link, routes } from '@redwoodjs/router'
+
 import LLeadsTableView from 'src/components/LLeadsTableView/LLeadsTableView'
 import SiderForm from 'src/components/SiderForm/SiderForm'
 
@@ -23,7 +24,6 @@ const LeadsCallerBoardPage = () => {
 
     <>
       <div className="flex flex-col w-screen h-screen overflow-auto text-gray-700 bg-gradient-to-tr from-blue-200 via-indigo-200 to-pink-200">
-
         <div className="flex items-center flex-shrink-0 w-full h-16 px-10 bg-white bg-opacity-75">
           <div className="ml-10">
             <Link
@@ -1574,6 +1574,7 @@ alt="" src="https://assets.codepen.io/5041378/internal/avatars/users/default.png
             open={isImportLeadsOpen}
             setOpen={setisImportLeadsOpen}
             title="Import Leads"
+            widthClass="max-w-4xl"
           />
         </div>
       </div>

@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
+import { Diversity1 } from '@mui/icons-material'
 import { Box, Menu, MenuItem, Typography } from '@mui/material'
 import { useDispatch } from 'react-redux'
 
@@ -24,11 +25,11 @@ const HeadNavBar = () => {
 
   return (
     <div>
-      <div className="flex items-center flex-shrink-0 h-[8vh] px-2  pl-0 bg-white bg-opacity-75 ">
+      <div className="flex items-center flex-shrink-0 h-[50px] px-2  pl-0 bg-white bg-opacity-75 ">
         {/* <h1 className="text-lg font-medium">redefine.</h1> */}
         <span
-          style={{ marginLeft: '-25px' }}
-          className="relative z-10 flex items-center text-2xl font-extrabold leading-none text-[#141446] select-none pl-0"
+          style={{ marginLeft: '-19px' }}
+          className="relative z-10 flex items-center text-md font-extrabold leading-none text-[#141446] select-none pl-0"
         >
           {/* <svg
             className="w-8 h-8 to-indigo-600 "
@@ -47,8 +48,8 @@ const HeadNavBar = () => {
           </svg> */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="88"
-            height="32"
+            width="78"
+            height="24"
             viewBox="0 0 1 28"
             fill="none"
             className="injected-svg"
@@ -79,7 +80,7 @@ const HeadNavBar = () => {
               fill="#7A77FF"
             ></path>
           </svg>
-          <span className="ml-" style={{ marginLeft: '-11px' }}>
+          <span className="ml- text-md" style={{ marginLeft: '-11px' }}>
             {' '}
             Redefine Erp .
           </span>
@@ -127,7 +128,7 @@ const HeadNavBar = () => {
           onClick={handleClick}
         >
           <button className="relative ml-2 text-sm focus:outline-none group  items-center justify-center h-10 text-sm font-medium">
-            <div className="flex items-center justify-between w-10 h-10 rounded ">
+            <div className="flex items-center justify-between w-6 mr-2 rounded ">
               <svg
                 width="30"
                 fill="currentColor"
@@ -140,12 +141,20 @@ const HeadNavBar = () => {
               </svg>
             </div>
           </button>
-          <Box display="flex" flexDirection="column" mr={2}>
-            <Typography variant="body2">{user?.displayName}</Typography>
+          <section className="mr-3">
+            <div className="text-gray-800 text-sm"> {user?.displayName}</div>
+            <div className="h-[14px] text-xs  text-gray-500">
+              {user?.orgName || user?.orgId} - {user?.role?.[0]}
+            </div>
+          </section>
+          {/* <Box display="flex" flexDirection="column" mr={2}>
+            <Typography variant="body2" className="text-sm">
+              {user?.displayName}
+            </Typography>
             <Typography variant="caption" className="text-gray-500">
               {user?.orgName || user?.orgId} - {user?.role?.[0]}
             </Typography>
-          </Box>
+          </Box> */}
         </Box>
         <Menu
           id="basic-menu"

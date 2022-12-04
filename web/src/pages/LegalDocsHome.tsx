@@ -6,54 +6,31 @@
 // import PhaseDetailsCard from '../PhaseDetailsCard/PhaseDetailsCard'
 import { useState, useEffect } from 'react'
 
-import { CalendarIcon, EyeIcon, DownloadIcon } from '@heroicons/react/outline'
-import { Link, routes } from '@redwoodjs/router'
-import ProjectStatsCard from './ProjectStatsCard/ProjectStatsCard'
+import { Link } from '@redwoodjs/router'
+
+import DropCompUnitStatus from 'src/components/dropDownUnitStatus'
+import DummyBodyLayout from 'src/components/DummyBodyLayout/DummyBodyLayout'
+import SiderForm from 'src/components/SiderForm/SiderForm'
 import { getAllProjects } from 'src/context/dbQueryFirebase'
-import DummyBodyLayout from './DummyBodyLayout/DummyBodyLayout'
-import SiderForm from './SiderForm/SiderForm'
 import { useAuth } from 'src/context/firebase-auth-context'
+import 'flowbite'
+import DropDownSearchBar from 'src/components/dropDownSearchBar'
 
-const projectFeedData = [
-  { k: 'Total', v: 125, pic: '' },
-  { k: 'Sold', v: 5, pic: '' },
-  { k: 'Booked', v: 25, pic: '' },
-  { k: 'Available', v: 85, pic: '' },
-  { k: 'Hold', v: 10, pic: '' },
-]
-const unitFeedData = [
-  { k: 'Total', v: 137500, pic: '' },
-  { k: 'Sold', v: 5500, pic: '' },
-  { k: 'Booked', v: 27500, pic: '' },
-  { k: 'Available', v: 93500, pic: '' },
-  { k: 'Hold', v: 11000, pic: '' },
-]
-const valueFeedData = [
-  { k: 'Jan-2022', v: 4, pic: '' },
-  { k: 'Feb-2022', v: 59, pic: '' },
-  { k: 'Mar-2022', v: 6, pic: '' },
-  { k: 'Apr-2022', v: 12, pic: '' },
-]
-
-const ProjectsUnitInventory = ({
-  project,
-  onSliderOpen = () => {},
-  isEdit,
-}) => {
-  const {
-    area,
-    builderName,
-    location,
-    projectName,
-    projectType,
-    uid = 0,
-  } = project
+import { PlusIcon } from '@heroicons/react/outline'
+const LegalDocsHome = ({ project }) => {
+  const { projectName } = project
   const { user } = useAuth()
 
   const { orgId } = user
   const [projects, setProjects] = useState([])
   const [isOpenSideView, setIsOpenSideView] = useState(false)
+  const [isDocViewOpenSideView, setIsDocViewOpenSideView] = useState(false)
   const [projectDetails, setProjectDetails] = useState({})
+  const [viewDocData, setViewDocData] = useState({})
+
+  const [filteredUnits, setFilteredUnits] = useState([])
+  const [filStatus, setFilStatus] = useState(['available', 'booked', 'blocked'])
+
   useEffect(() => {
     getProjects()
   }, [])
@@ -64,7 +41,12 @@ const ProjectsUnitInventory = ({
         const projects = querySnapshot.docs.map((docSnapshot) =>
           docSnapshot.data()
         )
-        setProjects(projects)
+        projects.map((user) => {
+          user.label = user?.projectName
+          user.value = user?.uid
+        })
+        setProjects([...projects])
+        console.log('project are ', projects)
       },
       () => setProjects([])
     )
@@ -74,62 +56,133 @@ const ProjectsUnitInventory = ({
     setIsOpenSideView(!isOpenSideView)
     setProjectDetails(project)
   }
+
+  const dispDoc = (docData) => {
+    setViewDocData(docData)
+    setIsDocViewOpenSideView(!isDocViewOpenSideView)
+  }
+
   return (
     <div>
-      <section className="py-8 mb-8 leading-7 text-gray-900 bg-white sm:py-12 md:py-16 lg:py-18 rounded-lg  ">
+      <section className=" mt-2 mr-2 py-8 mb-8 leading-7 text-gray-900 bg-white sm:py-12 md:py-16 lg:py-18 rounded-lg  ">
         <div className="box-border px-4 mx-auto border-solid sm:px-6 md:px-6 lg:px-8 max-w-full ">
-          <div className="flex flex-col  leading-7  text-gray-900 border-0 border-gray-200 ">
-            <div className="flex items-center flex-shrink-0  px-0  pl-0 border-b border-grey  mb-2">
+          {/* <div className="flex flex-col  leading-7  text-gray-900 border-0 border-gray-200 ">
+            <div className="flex items-center flex-shrink-0  px-0  pl-0   mb-2">
               <Link
                 className="flex items-center"
                 // to={routes.projectEdit({ uid })}
               >
-                <img className="w-16 h-16" alt="" src="/apart.svg"></img>
                 <span className="relative z-10 flex items-center w-auto text-3xl font-bold leading-none pl-0 mt-[18px]">
-                  {projectName}
+                  Documents
                 </span>
               </Link>
             </div>
+          </div> */}
+
+          <div className=" mt-6">
+            <form className="">
+              <div className="flex">
+                <div className="relative w-full">
+                  <input
+                    type="search"
+                    id="search-dropdown"
+                    className="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-r-lg rounded-l-lg border-l-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-l-gray-700  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
+                    placeholder={` Search Documents, Categories, Agreements...`}
+                    required
+                  />
+                  <section className="absolute top-0 right-0  flex flex-row">
+                    <DropDownSearchBar
+                      type={'All Projects'}
+                      id={'id'}
+                      setStatusFun={{}}
+                      viewUnitStatusA={filteredUnits}
+                      pickCustomViewer={selProjctFun}
+                      selProjectIs={projectDetails}
+                      dropDownItemsA={projects}
+                    />
+                    <button
+                      type="submit"
+                      className="p-2.5 px-8 text-sm font-medium text-white bg-blue-700 rounded-r-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        ></path>
+                      </svg>
+                      <span className="sr-only">Search</span>
+                    </button>
+                  </section>
+                </div>
+              </div>
+            </form>
           </div>
 
           <section className="grid justify-center md:grid-cols-3 lg:grid-cols-4 gap-5 lg:gap-7 my-10 ">
+            <div
+              className="cursor-pointer  z-10 flex flex-col  max-w-md p-2 my-0  mx-4 rounded-sm inline-block  min-h-[50px]  min-w-[100px] border border-dotted border-black rounded-md"
+              onClick={() => {
+                setSliderInfo({
+                  open: true,
+                  title: ['Apartments'].includes(
+                    projectDetails?.projectType?.name
+                  )
+                    ? 'Import Units'
+                    : 'Import Project Units',
+                  sliderData: {
+                    phase: {},
+                    block: {},
+                  },
+                  widthClass: 'max-w-6xl',
+                })
+              }}
+            >
+              <div
+                className="flex flex-col items-center justify-between"
+                onClick={() => setIsOpenSideView(!isOpenSideView)}
+              >
+                <PlusIcon className="h-8 w-8 mr-1 mt-14" aria-hidden="true" />
+                <h3 className="m-0  text-sm  mt-1 font-semibold  leading-tight tracking-tight text-black border-0 border-gray-200 text-xl ">
+                  Upload Document
+                </h3>
+              </div>
+              <div className="flex flex-row justify-between px-2">
+                <span className="flex flex-row items-center justify-between mr-2">
+                  <span className="text-sm font-"></span>
+                </span>
+              </div>
+            </div>
             {projects.length > 0 ? (
               projects.map((project, i) => (
                 // <span key={i}>{project?.projectName}</span>
                 <>
                   <div
                     key={i}
-                    className=" cursor-pointer relative max-w-md mx-auto md:max-w-2xl mt-6 min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded-xl mt-16 mr-8 transition duration-300 ease-in-out hover:scale-105 hover:drop-shadow-2xl bg-white bg-opacity-50 shadow-xl bg-gradient-to-br from-green-50 to-cyan-100"
-                    onClick={() => selProjctFun(project)}
+                    className=" cursor-pointer relative max-w-md mx-auto md:max-w-2xl  min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded-xl  mr-8 transition duration-300 ease-in-out hover:scale-105 hover:drop-shadow-2xl bg-white bg-opacity-50 shadow-xl bg-gradient-to-br from-green-50 to-cyan-100"
+                    onClick={() => dispDoc(project)}
                   >
-                    <div className="px-6 mb-4">
-                      <div className="flex flex-wrap justify-center">
-                        <div className="-mb-35 -translate-y-1/2 transform">
-                          <img
-                            src={
-                              project?.projectType?.name === 'Apartment'
-                                ? '/apart1.svg'
-                                : project?.projectType?.name === 'Plots'
-                                ? '/plot.svg'
-                                : project?.projectType?.name === 'WeekendVillas'
-                                ? '/weekend.svg'
-                                : `/villa.svg`
-                            }
-                            alt="Kobe Bryant"
-                            title="Kobe Bryant"
-                            className="py-3 bg-teal-100 mx-auto my-auto w-16 h-16 shadow-xl rounded-full align-middle border-none"
-                          />
-                        </div>
-                        <div className="w-full text-center mt-[-10px]">
-                          <h3 className="text-2xl text-slate-700 font-bold leading-normal mb-1 mt-">
-                            {project?.projectName}
-                          </h3>
-                          <div className="text-xs mt-0 mb-2 text-slate-400 font-bold uppercase">
-                            <i className="fas fa-map-marker-alt mr-2 text-slate-400 opacity-75"></i>
-                            {project?.location},{project?.pincode}
-                          </div>
-                        </div>
+                    <div className="px-4 py-2 mb-4 flex flex-col">
+                      <span>#103459</span>
+
+                      <h3 className="text-lg text-slate-700 font-bold  leading-normal mb-1 mt-">
+                        {project?.projectName}
+                      </h3>
+                      <div className="text-xs mt-0 mb-2 text-slate-400 font-bold uppercase">
+                        Nithesh B 31/11/2022
                       </div>
+                      <div className="text-xs mt-0 mb-2 text-slate-400 font-bold uppercase">
+                        Sale Agreement
+                      </div>
+
                       {/* <div className="text-center mt-2 mb-4">
                         <div className="flex justify-center lg:pt-2 pt-2 pb-0">
                           <div className="p-3 text-center">
@@ -166,7 +219,7 @@ const ProjectsUnitInventory = ({
                 // />
               ))
             ) : (
-              <DummyBodyLayout />
+              <></>
             )}
           </section>
           {/* <div className="grid grid-cols-1 gap-7 mt-10">
@@ -241,16 +294,24 @@ const ProjectsUnitInventory = ({
       <SiderForm
         open={isOpenSideView}
         setOpen={setIsOpenSideView}
-        title={'Project Inventory'}
+        title={'upload_legal_docs'}
         projectDetails={projectDetails}
-        unitsViewMode={true}
-
-
-
-
+        unitsViewMode={false}
+        widthClass="max-w-2xl"
+        projectsList={projects}
+      />
+      <SiderForm
+        open={isDocViewOpenSideView}
+        setOpen={setIsDocViewOpenSideView}
+        title={'disp_legal_docs'}
+        projectDetails={projectDetails}
+        unitsViewMode={false}
+        widthClass="max-w-md"
+        projectsList={projects}
+        viewLegalDocData={viewDocData}
       />
     </div>
   )
 }
 
-export default ProjectsUnitInventory
+export default LegalDocsHome

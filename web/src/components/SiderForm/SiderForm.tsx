@@ -12,11 +12,15 @@ import AddLeadForm from '../AddLeadForm'
 import AddPhaseForm from '../AddPhaseForm/AddPhaseForm'
 import AddTaskForm from '../AddTaskForm'
 import AddUnit from '../AddUnit'
+import ConstructUnitsDetails from '../ConstructModule/ConstructUnitsDetails'
+import UnitSideViewCRM from '../CrmModule/CrmUnitSideView'
 import CrmUnitSideView from '../crmUnitSideView'
 import CustomerProfileSideView from '../customerProfileSideView'
 import DialogFormBody from '../DialogFormBody/DialogFormBody'
 import InventoryViewSideForm from '../DialogFormBody/InventoryViewSideView'
+import LegalDocsUplaodHome from '../LeadUplodCsv/Legal_Docs_upload'
 import LeadsDropHomes from '../LeadUplodCsv/uploadHome'
+import LegalDocsViewHome from '../LegalModule/viewLegalDocument'
 import MoreDetailsPhaseForm from '../MoreDetailsPhaseForm/MoreDetailsPhaseForm'
 import PaymentScheduleForm from '../PaymentScheduleForm/PaymentScheduleForm'
 import ProjPhaseHome from '../ProjPhaseHome/ProjPhaseHome'
@@ -37,11 +41,14 @@ const SiderForm = ({
   projectDetails,
   phaseDetails,
   blockDetails,
-  widthClass = 'max-w-4xl',
+  widthClass,
   unitViewerrr,
   unitsViewMode,
   setUnitsViewMode,
   leadDetailsObj,
+  projectsList,
+  viewLegalDocData,
+  transactionData,
 }) => {
   // dont write too many here
   //  this is for customerProfileSideView
@@ -80,7 +87,8 @@ const SiderForm = ({
                 className={`relative w-screen ${
                   title === 'Add Lead' ||
                   title === 'Create Project' ||
-                  title === 'Edit Project'
+                  title === 'Edit Project' ||
+                  title === 'upload_legal_docs'
                     ? 'max-w-2xl'
                     : widthClass
                 }
@@ -140,6 +148,7 @@ const SiderForm = ({
                       myBlock={myBlock}
                     />
                   ))}
+
                 {title === 'Add Unit' && (
                   <AddUnit
                     title={title}
@@ -149,6 +158,41 @@ const SiderForm = ({
                     projectDetails={projectDetails}
                     phaseDetails={phaseDetails}
                     blockDetails={blockDetails}
+                  />
+                )}
+                {title === 'upload_legal_docs' && (
+                  <LegalDocsUplaodHome
+                    title={title}
+                    dialogOpen={setOpen}
+                    pId={pId}
+                    source={'planDiagram'}
+                    myPhase={phaseDetails}
+                    myBlock={myBlock}
+                    projectsList={projectsList}
+                  />
+                )}
+                {title === 'disp_legal_docs' && (
+                  <LegalDocsViewHome
+                    title={title}
+                    dialogOpen={setOpen}
+                    pId={pId}
+                    source={'planDiagram'}
+                    myPhase={phaseDetails}
+                    myBlock={myBlock}
+                    projectsList={projectsList}
+                    viewLegalDocData={viewLegalDocData}
+                  />
+                )}
+                {title === 'disp_unit_constDetails' && (
+                  <ConstructUnitsDetails
+                    title={title}
+                    dialogOpen={setOpen}
+                    pId={pId}
+                    source={'planDiagram'}
+                    myPhase={phaseDetails}
+                    myBlock={myBlock}
+                    projectsList={projectsList}
+                    viewLegalDocData={viewLegalDocData}
                   />
                 )}
                 {title === 'View Unit' && (
@@ -270,6 +314,7 @@ const SiderForm = ({
                     unitViewerrr={unitViewerrr}
                     unitsViewMode={unitsViewMode}
                     setUnitsViewMode={setUnitsViewMode}
+                    transactionData={transactionData}
                   />
                 )}
                 {title === 'CrmUnitSideView' && (
@@ -279,6 +324,16 @@ const SiderForm = ({
                     unitViewerrr={unitViewerrr}
                     unitsViewMode={unitsViewMode}
                     setUnitsViewMode={setUnitsViewMode}
+                  />
+                )}
+                {title === 'unitDetails_crm_view' && (
+                  <UnitSideViewCRM
+                    openUserProfile={false}
+                    customerDetails={customerDetails}
+                    unitViewerrr={unitViewerrr}
+                    unitsViewMode={unitsViewMode}
+                    setUnitsViewMode={setUnitsViewMode}
+                    transactionData={transactionData}
                   />
                 )}
               </div>

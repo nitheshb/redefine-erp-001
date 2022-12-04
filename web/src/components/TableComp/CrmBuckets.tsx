@@ -402,6 +402,8 @@ const CrmBucketList = ({ leadsTyper }) => {
         setOpen={setisImportLeadsOpen}
         title={'CrmUnitSideView'}
         customerDetails={selUserProfile}
+        widthClass="max-w-4xl"
+
       />
     </>
   )

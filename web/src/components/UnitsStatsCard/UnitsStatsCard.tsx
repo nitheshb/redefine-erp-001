@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import { IconButton, Menu, MenuItem, styled } from '@mui/material'
+
 import { MoreVert, Edit } from '@mui/icons-material'
+import { IconButton, Menu, MenuItem, styled } from '@mui/material'
+
 import SiderForm from '../SiderForm/SiderForm'
 
 const CustomMenuItem = styled(MenuItem)(() => ({
@@ -117,6 +119,7 @@ const UnitsStatsCard = ({ kind, feedData, bg }) => {
         setOpen={handleSliderClose}
         title={sliderInfo.title}
         data={sliderInfo.sliderData}
+        widthClass="max-w-4xl"
       />
     </div>
   )

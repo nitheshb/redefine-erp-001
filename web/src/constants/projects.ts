@@ -222,7 +222,28 @@ export const developmentTypes = [
     img: '/apart1.svg',
   },
 ]
-
+export const paymentMode = [
+  {
+    value: 'cheque',
+    label: 'Cheque',
+  },
+  {
+    value: 'imps',
+    label: 'Imps',
+  },
+  {
+    value: 'Neft',
+    label: 'Neft',
+  },
+  {
+    value: 'RTGS',
+    label: 'Rtgs',
+  },
+  {
+    value: 'acre',
+    label: 'Acre',
+  },
+]
 export const areaConversions = [
   {
     value: 'acre',

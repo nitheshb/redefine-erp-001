@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react'
+
 import { useParams } from '@redwoodjs/router'
-import HeadNavBar from '../../components/HeadNavBar/HeadNavBar'
-import DummyBodyLayout from '../../components/DummyBodyLayout/DummyBodyLayout'
-import HeadSideBar from '../../components/HeadSideBar/HeadSideBar'
-import SiderForm from '../../components/SiderForm/SiderForm'
-import ProjectsMHomeBody from '../../components/ProjectsMHomeBody/ProjectsMHomeBody'
-import ProjPhaseHome from '../../components/ProjPhaseHome/ProjPhaseHome'
+
 import { getProjectByUid } from 'src/context/dbQueryFirebase'
 import { useAuth } from 'src/context/firebase-auth-context'
+
+import DummyBodyLayout from '../../components/DummyBodyLayout/DummyBodyLayout'
+import HeadNavBar from '../../components/HeadNavBar/HeadNavBar'
+import HeadSideBar from '../../components/HeadSideBar/HeadSideBar'
+import ProjectsMHomeBody from '../../components/ProjectsMHomeBody/ProjectsMHomeBody'
+import ProjPhaseHome from '../../components/ProjPhaseHome/ProjPhaseHome'
+import SiderForm from '../../components/SiderForm/SiderForm'
 
 const ProjectEditPage = () => {
   const [isAddPhaseOpen, setIsAddPhaseOpen] = useState(false)
@@ -87,7 +90,8 @@ const ProjectEditPage = () => {
                 />
                 <ProjPhaseHome
                   projectDetails={project}
-                  source="projectManagement"             />
+                  source="projectManagement"
+                />
               </>
             ) : (
               <DummyBodyLayout />
@@ -97,12 +101,14 @@ const ProjectEditPage = () => {
               setOpen={handleAddPhaseOnClose}
               title="Add Phase"
               data={{}}
+              widthClass="max-w-4xl"
             />
             <SiderForm
               open={isEditProjectOpen}
               setOpen={handleEditProjectClose}
               title="Edit Project"
               data={project}
+              widthClass="max-w-2xl"
             />
           </div>
         </div>

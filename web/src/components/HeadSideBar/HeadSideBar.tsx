@@ -1,8 +1,10 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { UserGroupIcon } from '@heroicons/react/outline'
+
 import { Link, routes } from '@redwoodjs/router'
-import { useAuth } from 'src/context/firebase-auth-context'
+
 import { USER_ROLES } from 'src/constants/userRoles'
+import { useAuth } from 'src/context/firebase-auth-context'
 
 const HeadSideBar = (props) => {
   const { pgName } = props
@@ -126,7 +128,6 @@ const HeadSideBar = (props) => {
         }
         to={routes.financeModule()}
       >
-
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-5 w-5"
@@ -162,6 +163,28 @@ const HeadSideBar = (props) => {
             strokeLinecap="round"
             strokeLinejoin="round"
             d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"
+          />
+        </svg>
+      </Link>
+      <Link
+        className={
+          'flex items-center justify-center flex-shrink-0 w-10 h-10 mt-4 rounded hover:bg-gray-300 ' +
+          (pgName === 'constructModule' ? 'bg-gray-300' : '')
+        }
+        to={routes.constructModule()}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"
           />
         </svg>
       </Link>

@@ -23,9 +23,6 @@ import FinanceTableView from './financeTableView'
 const FinanceTransactionsHome = ({ leadsTyper }) => {
   const { user } = useAuth()
   const { orgId } = user
-  const isImportLeads =
-    user?.role?.includes(USER_ROLES.ADMIN) ||
-    user?.role?.includes(USER_ROLES.SALES_MANAGER)
   const [isImportLeadsOpen, setisImportLeadsOpen] = useState(false)
 
   // kanban board
@@ -36,6 +33,7 @@ const FinanceTransactionsHome = ({ leadsTyper }) => {
   const [leadsFetchedData, setLeadsFetchedData] = useState([])
   const [serialLeadsData, setSerialLeadsData] = useState([])
   const [projectList, setprojectList] = useState([])
+  const [transactionData, setTransactionData] = useState({})
 
   const [value, setValue] = useState('latest')
   const tabHeadFieldsA = [
@@ -90,7 +88,7 @@ const FinanceTransactionsHome = ({ leadsTyper }) => {
             // 'booked',
           ],
         },
-        (error) => setLeadsFetchedData([])
+        () => setLeadsFetchedData([])
       )
       return unsubscribe
     } else {
@@ -119,7 +117,7 @@ const FinanceTransactionsHome = ({ leadsTyper }) => {
             // 'booked',
           ],
         },
-        (error) => setLeadsFetchedData([])
+        () => setLeadsFetchedData([])
       )
       return unsubscribe
     }
@@ -148,6 +146,11 @@ const FinanceTransactionsHome = ({ leadsTyper }) => {
     setAddLeadsTypes(title)
     setisImportLeadsOpen(true)
     setSelUserProfile(data)
+  }
+
+  const viewTransaction = (docData) => {
+    setTransactionData(docData)
+    setisImportLeadsOpen(!isImportLeadsOpen)
   }
   return (
     <>
@@ -282,6 +285,7 @@ const FinanceTransactionsHome = ({ leadsTyper }) => {
                           <tr
                             className="app-border-1 border-y border-slate-200 my-2 py-2 h-[120px]"
                             key={i}
+                            onClick={() => viewTransaction(finData)}
                           >
                             <td>
                               <div className="flex justify-center text-right items-center rounded-md w-8 h-8 app-bg-yellow-2 app-color-yellow-1 text-lg font-semibold">
@@ -641,6 +645,8 @@ const FinanceTransactionsHome = ({ leadsTyper }) => {
         setOpen={setisImportLeadsOpen}
         title={'Transaction'}
         customerDetails={selUserProfile}
+        widthClass="max-w-md"
+        transactionData={transactionData}
       />
     </>
   )

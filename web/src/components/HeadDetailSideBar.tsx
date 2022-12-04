@@ -810,6 +810,296 @@ const HeadSideBarDetailView = ({
                 </ul>
               </li>
             )}
+
+            {sourceLink === 'legalModule' && (
+              <>
+                <li className="relative">
+                  <span
+                    className={
+                      'flex items-center text-sm py-1  h-9 mt-4 overflow-hidden  border-b text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
+                      (pgName === 'home' ? 'bg-gray-300' : '') +
+                      (viewable === 'inProgress'
+                        ? 'text-blue-600 text-md font-semibold '
+                        : '')
+                    }
+                    onClick={() => setViewable('inProgress')}
+                  >
+                    <span className="flex items-center ml-">
+                      <span className="text-md font-bold pl-1 ">
+                        Legal Modules
+                      </span>
+                    </span>
+                    <span className="flex ml-auto items-bottom">
+                      <span
+                        // style={{ color: '#058527' }}
+                        className="flex ml-auto items-bottom text-xs mt-2"
+                      ></span>
+                    </span>
+                  </span>
+                  <ul className="px-1 pt-2">
+                    {' '}
+                    {['Documents', 'Queries'].map((data, inx) => (
+                      <li className="relative" key={inx}>
+                        <span
+                          className={
+                            'flex items-center text-sm py-1  h-9 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
+                            (viewable === 'archieveLeads'
+                              ? 'text-blue-600 text-md font-semibold '
+                              : '')
+                          }
+                          onClick={() =>
+                            data === 'Documents'
+                              ? setViewable('legalDocuments')
+                              : data === 'Queries'
+                              ? setViewable('legalQueries')
+                              : setViewable('booked')
+                          }
+                        >
+                          <span className="flex items-center">
+                            <span style={{ color: '#058527' }}>
+                              <svg width="24" height="24" viewBox="0 0 24 24">
+                                <g fill="currentColor" fillRule="nonzero">
+                                  <path
+                                    d="M10 14.5a2 2 0 104 0h5.5V18a1.5 1.5 0 01-1.5 1.5H6A1.5 1.5 0 014.5 18v-3.5H10z"
+                                    opacity="0.1"
+                                  ></path>
+                                  <path d="M8.062 4h7.876a2 2 0 011.94 1.515l2.062 8.246a2 2 0 01.06.485V18a2 2 0 01-2 2H6a2 2 0 01-2-2v-3.754a2 2 0 01.06-.485l2.06-8.246A2 2 0 018.061 4zm0 1a1 1 0 00-.97.757L5.03 14.004a1 1 0 00-.03.242V18a1 1 0 001 1h12a1 1 0 001-1v-3.754a1 1 0 00-.03-.242l-2.06-8.247A1 1 0 0015.94 5H8.061zM12 17.25A2.75 2.75 0 019.295 15H7a.5.5 0 110-1h2.75a.5.5 0 01.5.5 1.75 1.75 0 003.5 0 .5.5 0 01.5-.5H17a.5.5 0 110 1h-2.295A2.75 2.75 0 0112 17.25z"></path>
+                                </g>
+                              </svg>
+                            </span>
+                            <span className="text-sm pl-[4px]">{data}</span>
+                          </span>
+                          <span className="flex ml-auto items-bottom">
+                            <span
+                              // style={{ color: '#058527' }}
+                              className="flex ml-auto items-bottom text-xs mt-2"
+                            ></span>
+                          </span>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+
+                <li className="relative">
+                  <span
+                    className={
+                      'flex items-center text-sm py-1  h-9 mt-4 overflow-hidden  border-b text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
+                      (pgName === 'home' ? 'bg-gray-300' : '') +
+                      (viewable === 'inProgress'
+                        ? 'text-blue-600 text-md font-semibold '
+                        : '')
+                    }
+                  >
+                    <span className="flex items-center ml-">
+                      <span className="text-md font-bold pl-1 ">Reports</span>
+                    </span>
+                    <span className="flex ml-auto items-bottom">
+                      <span
+                        // style={{ color: '#058527' }}
+                        className="flex ml-auto items-bottom text-xs mt-2"
+                      ></span>
+                    </span>
+                  </span>
+                  <li className="relative">
+                    <span
+                      className={
+                        'flex items-center text-sm py-1  h-9 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
+                        (pgName === 'home' ? 'bg-gray-300' : '')
+                      }
+                      onClick={() => setViewable('My Lead Report')}
+                    >
+                      <span className="flex items-center">
+                        <span style={{ color: '#692fc2' }}>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                          >
+                            <g fill="none" fillRule="evenodd">
+                              <g fill="currentColor" fillRule="nonzero">
+                                <g>
+                                  <g>
+                                    <path
+                                      d="M12 3c4.97 0 9 4.03 9 9s-4.03 9-9 9-9-4.03-9-9 4.03-9 9-9zm0 1c-4.418 0-8 3.582-8 8 0 .702.09 1.383.26 2.031l2.886-2.885c.196-.195.512-.195.708 0l2.646 2.647 4.793-4.794L13 9c-.276 0-.5-.224-.5-.5s.224-.5.5-.5h3.52l.052.005L16.5 8c.036 0 .071.004.105.011l.046.012.04.015c.014.005.027.012.04.019.013.006.025.013.036.02l.035.025c.014.01.027.02.04.033l.012.011.011.013c.012.012.023.025.033.039l-.044-.052c.026.027.05.056.069.087l.02.034.02.042.014.04c.005.015.009.03.012.046l.006.033.005.051V12c0 .276-.224.5-.5.5s-.5-.224-.5-.5V9.706l-5.146 5.148c-.196.195-.512.195-.708 0L7.5 12.207 4.618 15.09C5.827 17.974 8.677 20 12 20c4.418 0 8-3.582 8-8s-3.582-8-8-8z"
+                                      transform="translate(-564 -480) translate(528 444) translate(36 36)"
+                                    ></path>
+                                  </g>
+                                </g>
+                              </g>
+                            </g>
+                          </svg>
+                        </span>
+                        <span className="text-sm pl-[4px]">My Report</span>
+                      </span>
+                    </span>
+                  </li>
+                  <li className="relative">
+                    <span
+                      className={
+                        'flex items-center text-sm py-1  h-9 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
+                        (pgName === 'home' ? 'bg-gray-300' : '')
+                      }
+                      onClick={() => setViewable('Team Lead Report')}
+                    >
+                      <span className="flex items-center">
+                        <span style={{ color: '#692fc2' }}>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                          >
+                            <g fill="none" fillRule="evenodd">
+                              <g fill="currentColor" fillRule="nonzero">
+                                <g>
+                                  <g>
+                                    <path
+                                      d="M12 3c4.97 0 9 4.03 9 9s-4.03 9-9 9-9-4.03-9-9 4.03-9 9-9zm0 1c-4.418 0-8 3.582-8 8 0 .702.09 1.383.26 2.031l2.886-2.885c.196-.195.512-.195.708 0l2.646 2.647 4.793-4.794L13 9c-.276 0-.5-.224-.5-.5s.224-.5.5-.5h3.52l.052.005L16.5 8c.036 0 .071.004.105.011l.046.012.04.015c.014.005.027.012.04.019.013.006.025.013.036.02l.035.025c.014.01.027.02.04.033l.012.011.011.013c.012.012.023.025.033.039l-.044-.052c.026.027.05.056.069.087l.02.034.02.042.014.04c.005.015.009.03.012.046l.006.033.005.051V12c0 .276-.224.5-.5.5s-.5-.224-.5-.5V9.706l-5.146 5.148c-.196.195-.512.195-.708 0L7.5 12.207 4.618 15.09C5.827 17.974 8.677 20 12 20c4.418 0 8-3.582 8-8s-3.582-8-8-8z"
+                                      transform="translate(-564 -480) translate(528 444) translate(36 36)"
+                                    ></path>
+                                  </g>
+                                </g>
+                              </g>
+                            </g>
+                          </svg>
+                        </span>
+                        <span className="text-sm pl-[4px]">Team Report</span>
+                      </span>
+                    </span>
+                  </li>
+                </li>
+              </>
+            )}
+            {sourceLink === 'constructModule' && (
+              <>
+                <li className="relative">
+                  <span
+                    className={
+                      'flex items-center text-sm py-1  h-9 mt-4 overflow-hidden  border-b text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
+                      (pgName === 'home' ? 'bg-gray-300' : '') +
+                      (viewable === 'inProgress'
+                        ? 'text-blue-600 text-md font-semibold '
+                        : '')
+                    }
+                    onClick={() => setViewable('inProgress')}
+                  >
+                    <span className="flex items-center ml-">
+                      <span className="text-md font-bold pl-1 ">
+                        Construction Modules
+                      </span>
+                    </span>
+                    <span className="flex ml-auto items-bottom">
+                      <span
+                        // style={{ color: '#058527' }}
+                        className="flex ml-auto items-bottom text-xs mt-2"
+                      ></span>
+                    </span>
+                  </span>
+                  <ul className="px-1 pt-2">
+                    {' '}
+                    {['Units', 'Queries'].map((data, inx) => (
+                      <li className="relative" key={inx}>
+                        <span
+                          className={
+                            'flex items-center text-sm py-1  h-9 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
+                            (viewable === 'Units'
+                              ? 'text-blue-600 text-md font-semibold '
+                              : '')
+                          }
+                          onClick={() =>
+                            data === 'Units'
+                              ? setViewable('ConstructUnits')
+                              : data === 'Queries'
+                              ? setViewable('ConstructQueries')
+                              : setViewable('booked')
+                          }
+                        >
+                          <span className="flex items-center">
+                            <span style={{ color: '#058527' }}>
+                              <svg width="24" height="24" viewBox="0 0 24 24">
+                                <g fill="currentColor" fillRule="nonzero">
+                                  <path
+                                    d="M10 14.5a2 2 0 104 0h5.5V18a1.5 1.5 0 01-1.5 1.5H6A1.5 1.5 0 014.5 18v-3.5H10z"
+                                    opacity="0.1"
+                                  ></path>
+                                  <path d="M8.062 4h7.876a2 2 0 011.94 1.515l2.062 8.246a2 2 0 01.06.485V18a2 2 0 01-2 2H6a2 2 0 01-2-2v-3.754a2 2 0 01.06-.485l2.06-8.246A2 2 0 018.061 4zm0 1a1 1 0 00-.97.757L5.03 14.004a1 1 0 00-.03.242V18a1 1 0 001 1h12a1 1 0 001-1v-3.754a1 1 0 00-.03-.242l-2.06-8.247A1 1 0 0015.94 5H8.061zM12 17.25A2.75 2.75 0 019.295 15H7a.5.5 0 110-1h2.75a.5.5 0 01.5.5 1.75 1.75 0 003.5 0 .5.5 0 01.5-.5H17a.5.5 0 110 1h-2.295A2.75 2.75 0 0112 17.25z"></path>
+                                </g>
+                              </svg>
+                            </span>
+                            <span className="text-sm pl-[4px]">{data}</span>
+                          </span>
+                          <span className="flex ml-auto items-bottom">
+                            <span
+                              // style={{ color: '#058527' }}
+                              className="flex ml-auto items-bottom text-xs mt-2"
+                            ></span>
+                          </span>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+
+                <li className="relative">
+                  <span
+                    className={
+                      'flex items-center text-sm py-1  h-9 mt-4 overflow-hidden  border-b text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
+                      (pgName === 'home' ? 'bg-gray-300' : '') +
+                      (viewable === 'inProgress'
+                        ? 'text-blue-600 text-md font-semibold '
+                        : '')
+                    }
+                  >
+                    <span className="flex items-center ml-">
+                      <span className="text-md font-bold pl-1 ">Reports</span>
+                    </span>
+                    <span className="flex ml-auto items-bottom">
+                      <span
+                        // style={{ color: '#058527' }}
+                        className="flex ml-auto items-bottom text-xs mt-2"
+                      ></span>
+                    </span>
+                  </span>
+
+                  <li className="relative">
+                    <span
+                      className={
+                        'flex items-center text-sm py-1  h-9 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
+                        (pgName === 'home' ? 'bg-gray-300' : '')
+                      }
+                      onClick={() => setViewable('Team Lead Report')}
+                    >
+                      <span className="flex items-center">
+                        <span style={{ color: '#692fc2' }}>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                          >
+                            <g fill="none" fillRule="evenodd">
+                              <g fill="currentColor" fillRule="nonzero">
+                                <g>
+                                  <g>
+                                    <path
+                                      d="M12 3c4.97 0 9 4.03 9 9s-4.03 9-9 9-9-4.03-9-9 4.03-9 9-9zm0 1c-4.418 0-8 3.582-8 8 0 .702.09 1.383.26 2.031l2.886-2.885c.196-.195.512-.195.708 0l2.646 2.647 4.793-4.794L13 9c-.276 0-.5-.224-.5-.5s.224-.5.5-.5h3.52l.052.005L16.5 8c.036 0 .071.004.105.011l.046.012.04.015c.014.005.027.012.04.019.013.006.025.013.036.02l.035.025c.014.01.027.02.04.033l.012.011.011.013c.012.012.023.025.033.039l-.044-.052c.026.027.05.056.069.087l.02.034.02.042.014.04c.005.015.009.03.012.046l.006.033.005.051V12c0 .276-.224.5-.5.5s-.5-.224-.5-.5V9.706l-5.146 5.148c-.196.195-.512.195-.708 0L7.5 12.207 4.618 15.09C5.827 17.974 8.677 20 12 20c4.418 0 8-3.582 8-8s-3.582-8-8-8z"
+                                      transform="translate(-564 -480) translate(528 444) translate(36 36)"
+                                    ></path>
+                                  </g>
+                                </g>
+                              </g>
+                            </g>
+                          </svg>
+                        </span>
+                        <span className="text-sm pl-[4px]">Team Report</span>
+                      </span>
+                    </span>
+                  </li>
+                </li>
+              </>
+            )}
             {/* {sourceLink === 'leadsScreen' && access.includes('manage_leads') && (
               <li className="relative">
                 <span
@@ -877,6 +1167,7 @@ const HeadSideBarDetailView = ({
               'leadsScreen',
               'financeModule',
               'projectsScreen',
+              'constructModule',
             ].includes(sourceLink) && (
               <li className="relative">
                 <Link
@@ -1212,27 +1503,27 @@ const HeadSideBarDetailView = ({
               </li>
             )}
             <li className="relative">
-              <Link
-                className={
-                  'flex items-center text-sm py-1  h-9 mt-4 overflow-hidden   border-b text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
-                  (pgName === 'home' ? 'bg-gray-300' : '')
-                }
-                // to={routes.home()}
-              >
-                <span className="flex items-center ml-">
-                  <span className="text-md font-bold pl-1 ">Reports</span>
-                </span>
-                <span className="flex ml-auto items-bottom">
-                  <span
-                    // style={{ color: '#058527' }}
-                    className="flex ml-auto items-bottom text-xs mt-2"
-                  ></span>
-                </span>
-              </Link>
               <ul className="px-1 pt-1">
                 {' '}
                 {sourceLink === 'projectsScreen' && (
                   <>
+                    <Link
+                      className={
+                        'flex items-center text-sm py-1  h-9 mt-4 overflow-hidden   border-b text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
+                        (pgName === 'home' ? 'bg-gray-300' : '')
+                      }
+                      // to={routes.home()}
+                    >
+                      <span className="flex items-center ml-">
+                        <span className="text-md font-bold pl-1 ">Reports</span>
+                      </span>
+                      <span className="flex ml-auto items-bottom">
+                        <span
+                          // style={{ color: '#058527' }}
+                          className="flex ml-auto items-bottom text-xs mt-2"
+                        ></span>
+                      </span>
+                    </Link>
                     <li className="relative">
                       <span
                         className={
@@ -1303,76 +1594,77 @@ const HeadSideBarDetailView = ({
                         </span>
                       </span>
                     </li>
+
+                    <li className="relative">
+                      <span
+                        className={
+                          'flex items-center text-sm py-1  h-9 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
+                          (pgName === 'home' ? 'bg-gray-300' : '')
+                        }
+                        onClick={() => setViewable('My Lead Report')}
+                      >
+                        <span className="flex items-center">
+                          <span style={{ color: '#692fc2' }}>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                            >
+                              <g fill="none" fillRule="evenodd">
+                                <g fill="currentColor" fillRule="nonzero">
+                                  <g>
+                                    <g>
+                                      <path
+                                        d="M12 3c4.97 0 9 4.03 9 9s-4.03 9-9 9-9-4.03-9-9 4.03-9 9-9zm0 1c-4.418 0-8 3.582-8 8 0 .702.09 1.383.26 2.031l2.886-2.885c.196-.195.512-.195.708 0l2.646 2.647 4.793-4.794L13 9c-.276 0-.5-.224-.5-.5s.224-.5.5-.5h3.52l.052.005L16.5 8c.036 0 .071.004.105.011l.046.012.04.015c.014.005.027.012.04.019.013.006.025.013.036.02l.035.025c.014.01.027.02.04.033l.012.011.011.013c.012.012.023.025.033.039l-.044-.052c.026.027.05.056.069.087l.02.034.02.042.014.04c.005.015.009.03.012.046l.006.033.005.051V12c0 .276-.224.5-.5.5s-.5-.224-.5-.5V9.706l-5.146 5.148c-.196.195-.512.195-.708 0L7.5 12.207 4.618 15.09C5.827 17.974 8.677 20 12 20c4.418 0 8-3.582 8-8s-3.582-8-8-8z"
+                                        transform="translate(-564 -480) translate(528 444) translate(36 36)"
+                                      ></path>
+                                    </g>
+                                  </g>
+                                </g>
+                              </g>
+                            </svg>
+                          </span>
+                          <span className="text-sm pl-[4px]">My Report</span>
+                        </span>
+                      </span>
+                    </li>
+                    <li className="relative">
+                      <span
+                        className={
+                          'flex items-center text-sm py-1  h-9 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
+                          (pgName === 'home' ? 'bg-gray-300' : '')
+                        }
+                        onClick={() => setViewable('Team Lead Report')}
+                      >
+                        <span className="flex items-center">
+                          <span style={{ color: '#692fc2' }}>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                            >
+                              <g fill="none" fillRule="evenodd">
+                                <g fill="currentColor" fillRule="nonzero">
+                                  <g>
+                                    <g>
+                                      <path
+                                        d="M12 3c4.97 0 9 4.03 9 9s-4.03 9-9 9-9-4.03-9-9 4.03-9 9-9zm0 1c-4.418 0-8 3.582-8 8 0 .702.09 1.383.26 2.031l2.886-2.885c.196-.195.512-.195.708 0l2.646 2.647 4.793-4.794L13 9c-.276 0-.5-.224-.5-.5s.224-.5.5-.5h3.52l.052.005L16.5 8c.036 0 .071.004.105.011l.046.012.04.015c.014.005.027.012.04.019.013.006.025.013.036.02l.035.025c.014.01.027.02.04.033l.012.011.011.013c.012.012.023.025.033.039l-.044-.052c.026.027.05.056.069.087l.02.034.02.042.014.04c.005.015.009.03.012.046l.006.033.005.051V12c0 .276-.224.5-.5.5s-.5-.224-.5-.5V9.706l-5.146 5.148c-.196.195-.512.195-.708 0L7.5 12.207 4.618 15.09C5.827 17.974 8.677 20 12 20c4.418 0 8-3.582 8-8s-3.582-8-8-8z"
+                                        transform="translate(-564 -480) translate(528 444) translate(36 36)"
+                                      ></path>
+                                    </g>
+                                  </g>
+                                </g>
+                              </g>
+                            </svg>
+                          </span>
+                          <span className="text-sm pl-[4px]">Team Report</span>
+                        </span>
+                      </span>
+                    </li>
                   </>
                 )}
-                <li className="relative">
-                  <span
-                    className={
-                      'flex items-center text-sm py-1  h-9 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
-                      (pgName === 'home' ? 'bg-gray-300' : '')
-                    }
-                    onClick={() => setViewable('My Lead Report')}
-                  >
-                    <span className="flex items-center">
-                      <span style={{ color: '#692fc2' }}>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                        >
-                          <g fill="none" fillRule="evenodd">
-                            <g fill="currentColor" fillRule="nonzero">
-                              <g>
-                                <g>
-                                  <path
-                                    d="M12 3c4.97 0 9 4.03 9 9s-4.03 9-9 9-9-4.03-9-9 4.03-9 9-9zm0 1c-4.418 0-8 3.582-8 8 0 .702.09 1.383.26 2.031l2.886-2.885c.196-.195.512-.195.708 0l2.646 2.647 4.793-4.794L13 9c-.276 0-.5-.224-.5-.5s.224-.5.5-.5h3.52l.052.005L16.5 8c.036 0 .071.004.105.011l.046.012.04.015c.014.005.027.012.04.019.013.006.025.013.036.02l.035.025c.014.01.027.02.04.033l.012.011.011.013c.012.012.023.025.033.039l-.044-.052c.026.027.05.056.069.087l.02.034.02.042.014.04c.005.015.009.03.012.046l.006.033.005.051V12c0 .276-.224.5-.5.5s-.5-.224-.5-.5V9.706l-5.146 5.148c-.196.195-.512.195-.708 0L7.5 12.207 4.618 15.09C5.827 17.974 8.677 20 12 20c4.418 0 8-3.582 8-8s-3.582-8-8-8z"
-                                    transform="translate(-564 -480) translate(528 444) translate(36 36)"
-                                  ></path>
-                                </g>
-                              </g>
-                            </g>
-                          </g>
-                        </svg>
-                      </span>
-                      <span className="text-sm pl-[4px]">My Report</span>
-                    </span>
-                  </span>
-                </li>
-                <li className="relative">
-                  <span
-                    className={
-                      'flex items-center text-sm py-1  h-9 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out cursor-pointer ' +
-                      (pgName === 'home' ? 'bg-gray-300' : '')
-                    }
-                    onClick={() => setViewable('Team Lead Report')}
-                  >
-                    <span className="flex items-center">
-                      <span style={{ color: '#692fc2' }}>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                        >
-                          <g fill="none" fillRule="evenodd">
-                            <g fill="currentColor" fillRule="nonzero">
-                              <g>
-                                <g>
-                                  <path
-                                    d="M12 3c4.97 0 9 4.03 9 9s-4.03 9-9 9-9-4.03-9-9 4.03-9 9-9zm0 1c-4.418 0-8 3.582-8 8 0 .702.09 1.383.26 2.031l2.886-2.885c.196-.195.512-.195.708 0l2.646 2.647 4.793-4.794L13 9c-.276 0-.5-.224-.5-.5s.224-.5.5-.5h3.52l.052.005L16.5 8c.036 0 .071.004.105.011l.046.012.04.015c.014.005.027.012.04.019.013.006.025.013.036.02l.035.025c.014.01.027.02.04.033l.012.011.011.013c.012.012.023.025.033.039l-.044-.052c.026.027.05.056.069.087l.02.034.02.042.014.04c.005.015.009.03.012.046l.006.033.005.051V12c0 .276-.224.5-.5.5s-.5-.224-.5-.5V9.706l-5.146 5.148c-.196.195-.512.195-.708 0L7.5 12.207 4.618 15.09C5.827 17.974 8.677 20 12 20c4.418 0 8-3.582 8-8s-3.582-8-8-8z"
-                                    transform="translate(-564 -480) translate(528 444) translate(36 36)"
-                                  ></path>
-                                </g>
-                              </g>
-                            </g>
-                          </g>
-                        </svg>
-                      </span>
-                      <span className="text-sm pl-[4px]">Team Report</span>
-                    </span>
-                  </span>
-                </li>
               </ul>
             </li>
 
